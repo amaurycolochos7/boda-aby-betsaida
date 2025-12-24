@@ -1275,6 +1275,7 @@ button {
     letter-spacing: 0.05em;
     border-radius: 50px;
     transition: all var(--transition-fast);
+    text-decoration: none;
 }
 
 .rsvp-btn svg {
@@ -1283,26 +1284,23 @@ button {
 }
 
 .rsvp-btn.primary {
-    background: #25D366;
-    color: var(--white);
-    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
+    background: var(--gold-gradient);
+    color: var(--text-dark);
+    box-shadow: var(--shadow-gold);
 }
 
 .rsvp-btn.primary:hover {
-    background: #1fbd59;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(37, 211, 102, 0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(212, 175, 55, 0.5);
 }
 
-.rsvp-btn.secondary {
-    background: var(--white);
-    color: #25D366;
-    border: 2px solid #25D366;
-}
-
-.rsvp-btn.secondary:hover {
-    background: rgba(37, 211, 102, 0.1);
-    transform: translateY(-2px);
+.rsvp-info {
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    color: var(--text-medium);
+    max-width: 500px;
+    margin: 0 auto 30px;
+    line-height: 1.8;
 }
 
 .rsvp-note {

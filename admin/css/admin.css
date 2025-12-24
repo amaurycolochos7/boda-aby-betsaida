@@ -1,0 +1,616 @@
+/* ==================== VARIABLES ==================== */
+:root {
+    --primary: #b8860b;
+    --primary-light: #d4a853;
+    --primary-dark: #8b6914;
+    --secondary: #2c3e50;
+    --background: #0d0d0d;
+    --surface: #1a1a1a;
+    --surface-light: #252525;
+    --text: #ffffff;
+    --text-muted: #a0a0a0;
+    --error: #e74c3c;
+    --success: #27ae60;
+    --warning: #f39c12;
+    --border: rgba(184, 134, 11, 0.3);
+    --shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    --font-display: 'Cormorant Garamond', serif;
+    --font-body: 'Montserrat', sans-serif;
+}
+
+/* ==================== RESET ==================== */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-body);
+    background: var(--background);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+/* ==================== LOGIN PAGE ==================== */
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background:
+        radial-gradient(ellipse at top, rgba(184, 134, 11, 0.1) 0%, transparent 50%),
+        var(--background);
+}
+
+.login-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3rem;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: var(--shadow);
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.login-header .initials {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+}
+
+.login-header .initials .separator {
+    font-size: 1.5rem;
+    opacity: 0.7;
+}
+
+.login-header h1 {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.login-header p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* ==================== FORM STYLES ==================== */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.form-group input {
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    color: var(--text);
+    font-size: 1rem;
+    font-family: var(--font-body);
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.15);
+}
+
+.form-group input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+.error-message {
+    background: rgba(231, 76, 60, 0.1);
+    border: 1px solid var(--error);
+    border-radius: 10px;
+    padding: 1rem;
+    color: var(--error);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.error-message.hidden {
+    display: none;
+}
+
+.login-btn {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border: none;
+    border-radius: 10px;
+    padding: 1rem 2rem;
+    color: var(--text);
+    font-size: 1rem;
+    font-weight: 500;
+    font-family: var(--font-body);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 0.5rem;
+}
+
+.login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(184, 134, 11, 0.4);
+}
+
+.login-btn:active {
+    transform: translateY(0);
+}
+
+.login-footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+}
+
+.login-footer p {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+/* ==================== DASHBOARD LAYOUT ==================== */
+.dashboard-container {
+    min-height: 100vh;
+    display: flex;
+}
+
+.sidebar {
+    width: 280px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+    left: 0;
+    top: 0;
+}
+
+.sidebar-header {
+    text-align: center;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2rem;
+}
+
+.sidebar-header .initials {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: var(--font-display);
+    font-size: 2rem;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.sidebar-header h2 {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+.sidebar-nav {
+    flex: 1;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+}
+
+.sidebar-nav li {
+    margin-bottom: 0.5rem;
+}
+
+.sidebar-nav a,
+.sidebar-nav button {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    width: 100%;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-body);
+    text-align: left;
+}
+
+.sidebar-nav a:hover,
+.sidebar-nav button:hover,
+.sidebar-nav a.active {
+    background: var(--surface-light);
+    color: var(--text);
+}
+
+.sidebar-nav a.active {
+    color: var(--primary);
+}
+
+.sidebar-nav svg {
+    width: 20px;
+    height: 20px;
+}
+
+.sidebar-footer {
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+}
+
+.main-content {
+    flex: 1;
+    margin-left: 280px;
+    padding: 2rem;
+}
+
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.content-header h1 {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 500;
+}
+
+/* ==================== STATS CARDS ==================== */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.stat-card .stat-value {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.stat-card .stat-label {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+/* ==================== TABLES CONFIG ==================== */
+.config-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.config-section h2 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.config-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.config-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.config-item label {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.config-item input,
+.config-item select {
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.875rem 1rem;
+    color: var(--text);
+    font-size: 1rem;
+    font-family: var(--font-body);
+}
+
+.config-item input:focus,
+.config-item select:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* ==================== PASS FORM ==================== */
+.pass-form {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.generated-code {
+    background: var(--surface-light);
+    border: 2px dashed var(--primary);
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.generated-code .code {
+    font-family: 'Courier New', monospace;
+    font-size: 3rem;
+    color: var(--primary);
+    letter-spacing: 0.5rem;
+    font-weight: 700;
+}
+
+.generated-code p {
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+}
+
+.copy-btn {
+    background: transparent;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    padding: 0.5rem 1.5rem;
+    border-radius: 25px;
+    cursor: pointer;
+    margin-top: 1rem;
+    font-family: var(--font-body);
+    transition: all 0.3s ease;
+}
+
+.copy-btn:hover {
+    background: var(--primary);
+    color: var(--text);
+}
+
+/* ==================== GUESTS TABLE ==================== */
+.guests-table-container {
+    overflow-x: auto;
+}
+
+.guests-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.guests-table th,
+.guests-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+.guests-table th {
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.guests-table tbody tr:hover {
+    background: var(--surface-light);
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.status-badge.pending {
+    background: rgba(243, 156, 18, 0.1);
+    color: var(--warning);
+}
+
+.status-badge.confirmed {
+    background: rgba(39, 174, 96, 0.1);
+    color: var(--success);
+}
+
+.status-badge.partial {
+    background: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+}
+
+.status-badge.complete {
+    background: rgba(39, 174, 96, 0.2);
+    color: var(--success);
+}
+
+/* ==================== BUTTONS ==================== */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.5rem;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    font-family: var(--font-body);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: var(--text);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(184, 134, 11, 0.4);
+}
+
+.btn-secondary {
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+.btn-secondary:hover {
+    border-color: var(--primary);
+}
+
+.btn-danger {
+    background: rgba(231, 76, 60, 0.1);
+    border: 1px solid var(--error);
+    color: var(--error);
+}
+
+.btn-danger:hover {
+    background: var(--error);
+    color: var(--text);
+}
+
+/* ==================== TOAST NOTIFICATIONS ==================== */
+.toast-container {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.toast {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    box-shadow: var(--shadow);
+    animation: slideIn 0.3s ease;
+}
+
+.toast.success {
+    border-color: var(--success);
+}
+
+.toast.error {
+    border-color: var(--error);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 1024px) {
+    .sidebar {
+        width: 80px;
+        padding: 1rem;
+    }
+
+    .sidebar-header .initials span:not(.separator):last-child,
+    .sidebar-header h2,
+    .sidebar-nav span {
+        display: none;
+    }
+
+    .sidebar-nav a,
+    .sidebar-nav button {
+        justify-content: center;
+        padding: 1rem;
+    }
+
+    .main-content {
+        margin-left: 80px;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 1rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
