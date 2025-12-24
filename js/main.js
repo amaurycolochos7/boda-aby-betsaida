@@ -64,26 +64,52 @@
         });
     }
 
-    // ==================== FLOATING NAVIGATION ====================
+    // ==================== HAMBURGER MENU & NAVIGATION ====================
     function initFloatingNav() {
-        if (!floatingNav) return;
+        const menuToggle = document.getElementById('menu-toggle');
+        const navClose = document.getElementById('nav-close');
+        const navOverlay = floatingNav?.querySelector('.nav-overlay');
 
-        let lastScrollY = window.scrollY;
+        if (!floatingNav || !menuToggle) return;
+
         const heroSection = document.getElementById('hero');
         const heroHeight = heroSection?.offsetHeight || 500;
 
+        // Show/hide menu button on scroll
         window.addEventListener('scroll', () => {
             const currentScrollY = window.scrollY;
 
-            // Show nav after scrolling past hero
+            // Show menu toggle after scrolling past hero
             if (currentScrollY > heroHeight - 100) {
-                floatingNav.classList.add('visible');
+                menuToggle.classList.add('visible');
             } else {
-                floatingNav.classList.remove('visible');
+                menuToggle.classList.remove('visible');
+                // Also close nav if open and scrolled back up
+                closeNav();
             }
-
-            lastScrollY = currentScrollY;
         }, { passive: true });
+
+        // Toggle menu
+        menuToggle.addEventListener('click', () => {
+            if (floatingNav.classList.contains('active')) {
+                closeNav();
+            } else {
+                openNav();
+            }
+        });
+
+        // Close button
+        navClose?.addEventListener('click', closeNav);
+
+        // Click overlay to close
+        navOverlay?.addEventListener('click', closeNav);
+
+        // ESC key to close nav
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && floatingNav.classList.contains('active')) {
+                closeNav();
+            }
+        });
 
         // Smooth scroll for nav links
         const navLinks = floatingNav.querySelectorAll('a');
@@ -94,16 +120,30 @@
                 const targetSection = document.getElementById(targetId);
 
                 if (targetSection) {
-                    const navHeight = floatingNav.offsetHeight;
-                    const targetPosition = targetSection.offsetTop - navHeight - 20;
+                    const targetPosition = targetSection.offsetTop - 20;
 
                     window.scrollTo({
                         top: targetPosition,
                         behavior: 'smooth'
                     });
+
+                    // Close nav after clicking
+                    closeNav();
                 }
             });
         });
+
+        function openNav() {
+            floatingNav.classList.add('active');
+            menuToggle.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeNav() {
+            floatingNav.classList.remove('active');
+            menuToggle.classList.remove('active');
+            document.body.style.overflow = '';
+        }
     }
 
     // ==================== SCROLL ANIMATIONS ====================

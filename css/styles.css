@@ -19,21 +19,21 @@
     --text-dark: #2C2C2C;
     --text-medium: #5A5A5A;
     --text-light: #888888;
-    
+
     /* Typography */
     --font-script: 'Great Vibes', cursive;
     --font-serif: 'Cormorant Garamond', serif;
     --font-sans: 'Montserrat', sans-serif;
-    
+
     /* Spacing */
     --section-padding: 80px 20px;
     --container-max: 1200px;
-    
+
     /* Transitions */
     --transition-fast: 0.3s ease;
     --transition-medium: 0.5s ease;
     --transition-slow: 0.8s ease;
-    
+
     /* Shadows */
     --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.08);
     --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.12);
@@ -41,7 +41,9 @@
 }
 
 /* ========== RESET & BASE ========== */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -84,8 +86,13 @@ button {
 
 /* ========== ANIMATIONS ========== */
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes fadeInUp {
@@ -93,6 +100,7 @@ button {
         opacity: 0;
         transform: translateY(30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -104,6 +112,7 @@ button {
         opacity: 0;
         transform: translateY(-30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -115,6 +124,7 @@ button {
         opacity: 0;
         transform: translateX(-50px);
     }
+
     to {
         opacity: 1;
         transform: translateX(0);
@@ -126,6 +136,7 @@ button {
         opacity: 0;
         transform: translateX(50px);
     }
+
     to {
         opacity: 1;
         transform: translateX(0);
@@ -133,29 +144,63 @@ button {
 }
 
 @keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
 }
 
 @keyframes shimmer {
-    0% { background-position: -200% center; }
-    100% { background-position: 200% center; }
+    0% {
+        background-position: -200% center;
+    }
+
+    100% {
+        background-position: 200% center;
+    }
 }
 
 @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
 }
 
 @keyframes scroll {
-    0% { opacity: 1; transform: translateY(0); }
-    50% { opacity: 0.5; }
-    100% { opacity: 0; transform: translateY(20px); }
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
 }
 
 @keyframes growLine {
-    from { transform: scaleX(0); }
-    to { transform: scaleX(1); }
+    from {
+        transform: scaleX(0);
+    }
+
+    to {
+        transform: scaleX(1);
+    }
 }
 
 /* Animation Classes */
@@ -163,11 +208,30 @@ button {
     animation: fadeIn 1s ease forwards;
 }
 
-.fade-in.delay-1 { animation-delay: 0.3s; opacity: 0; }
-.fade-in.delay-2 { animation-delay: 0.6s; opacity: 0; }
-.fade-in.delay-3 { animation-delay: 0.9s; opacity: 0; }
-.fade-in.delay-4 { animation-delay: 1.2s; opacity: 0; }
-.fade-in.delay-5 { animation-delay: 1.5s; opacity: 0; }
+.fade-in.delay-1 {
+    animation-delay: 0.3s;
+    opacity: 0;
+}
+
+.fade-in.delay-2 {
+    animation-delay: 0.6s;
+    opacity: 0;
+}
+
+.fade-in.delay-3 {
+    animation-delay: 0.9s;
+    opacity: 0;
+}
+
+.fade-in.delay-4 {
+    animation-delay: 1.2s;
+    opacity: 0;
+}
+
+.fade-in.delay-5 {
+    animation-delay: 1.5s;
+    opacity: 0;
+}
 
 .animate-on-scroll {
     opacity: 0;
@@ -180,11 +244,25 @@ button {
     transform: translateY(0);
 }
 
-.animate-on-scroll.delay-1 { transition-delay: 0.1s; }
-.animate-on-scroll.delay-2 { transition-delay: 0.2s; }
-.animate-on-scroll.delay-3 { transition-delay: 0.3s; }
-.animate-on-scroll.delay-4 { transition-delay: 0.4s; }
-.animate-on-scroll.delay-5 { transition-delay: 0.5s; }
+.animate-on-scroll.delay-1 {
+    transition-delay: 0.1s;
+}
+
+.animate-on-scroll.delay-2 {
+    transition-delay: 0.2s;
+}
+
+.animate-on-scroll.delay-3 {
+    transition-delay: 0.3s;
+}
+
+.animate-on-scroll.delay-4 {
+    transition-delay: 0.4s;
+}
+
+.animate-on-scroll.delay-5 {
+    transition-delay: 0.5s;
+}
 
 /* ========== ENTRY SCREEN ========== */
 .entry-screen {
@@ -212,12 +290,10 @@ button {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(
-        to bottom,
-        rgba(0, 0, 0, 0.4) 0%,
-        rgba(0, 0, 0, 0.5) 50%,
-        rgba(0, 0, 0, 0.6) 100%
-    );
+    background: linear-gradient(to bottom,
+            rgba(0, 0, 0, 0.4) 0%,
+            rgba(0, 0, 0, 0.5) 50%,
+            rgba(0, 0, 0, 0.6) 100%);
 }
 
 .entry-content {
@@ -255,13 +331,11 @@ button {
 .entry-initials .separator {
     width: 2px;
     height: 150px;
-    background: linear-gradient(
-        to bottom,
-        transparent 0%,
-        var(--gold-light) 20%,
-        var(--gold-light) 80%,
-        transparent 100%
-    );
+    background: linear-gradient(to bottom,
+            transparent 0%,
+            var(--gold-light) 20%,
+            var(--gold-light) 80%,
+            transparent 100%);
 }
 
 .entry-date {
@@ -413,48 +487,161 @@ button {
     right: 0;
 }
 
-/* ========== FLOATING NAVIGATION ========== */
+/* ========== HAMBURGER MENU BUTTON ========== */
+.menu-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1001;
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    box-shadow: var(--shadow-medium);
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.8);
+    transition: all var(--transition-fast);
+}
+
+.menu-toggle.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+}
+
+.menu-toggle:hover {
+    box-shadow: var(--shadow-gold);
+    transform: scale(1.05);
+}
+
+.menu-toggle.visible:hover {
+    transform: scale(1.05);
+}
+
+.menu-line {
+    width: 22px;
+    height: 2px;
+    background: var(--gold-dark);
+    border-radius: 2px;
+    transition: all var(--transition-fast);
+}
+
+.menu-toggle.active .menu-line:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.menu-toggle.active .menu-line:nth-child(2) {
+    opacity: 0;
+}
+
+.menu-toggle.active .menu-line:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* ========== SLIDE-OUT NAVIGATION ========== */
 .floating-nav {
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
+    width: 100%;
+    height: 100%;
     z-index: 1000;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    box-shadow: var(--shadow-soft);
-    transform: translateY(-100%);
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--transition-fast), visibility var(--transition-fast);
+}
+
+.floating-nav.active {
+    pointer-events: auto;
+    opacity: 1;
+    visibility: visible;
+}
+
+.nav-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.floating-nav.active .nav-overlay {
+    opacity: 1;
+}
+
+.nav-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 280px;
+    max-width: 85%;
+    height: 100%;
+    background: var(--white);
+    box-shadow: -5px 0 30px rgba(0, 0, 0, 0.15);
+    transform: translateX(100%);
     transition: transform var(--transition-medium);
-}
-
-.floating-nav.visible {
-    transform: translateY(0);
-}
-
-.floating-nav ul {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    list-style: none;
-    padding: 15px 20px;
-    gap: 10px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    padding: 80px 30px 40px;
 }
 
-.floating-nav li a {
+.floating-nav.active .nav-panel {
+    transform: translateX(0);
+}
+
+.nav-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    font-size: 2rem;
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color var(--transition-fast);
+}
+
+.nav-close:hover {
+    color: var(--gold-dark);
+}
+
+.nav-panel ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.nav-panel li a {
+    display: block;
     font-family: var(--font-sans);
-    font-size: 0.75rem;
+    font-size: 0.9rem;
     font-weight: 500;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--text-medium);
-    padding: 8px 12px;
-    border-radius: 20px;
+    padding: 15px 20px;
+    border-radius: 12px;
     transition: all var(--transition-fast);
 }
 
-.floating-nav li a:hover,
-.floating-nav li a.active {
+.nav-panel li a:hover,
+.nav-panel li a.active {
     color: var(--gold-dark);
     background: var(--pink-light);
 }
@@ -510,7 +697,7 @@ button {
     left: 0;
     width: 100%;
     height: 100%;
-    background: 
+    background:
         radial-gradient(ellipse at top left, rgba(255, 182, 193, 0.2) 0%, transparent 50%),
         radial-gradient(ellipse at bottom right, rgba(212, 175, 55, 0.1) 0%, transparent 50%);
 }
@@ -931,12 +1118,10 @@ button {
     top: 0;
     bottom: 0;
     width: 2px;
-    background: linear-gradient(
-        to bottom,
-        var(--gold) 0%,
-        var(--pink) 50%,
-        var(--gold) 100%
-    );
+    background: linear-gradient(to bottom,
+            var(--gold) 0%,
+            var(--pink) 50%,
+            var(--gold) 100%);
 }
 
 .timeline-item {
@@ -1043,11 +1228,9 @@ button {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(
-        to bottom,
-        transparent 60%,
-        rgba(0, 0, 0, 0.3) 100%
-    );
+    background: linear-gradient(to bottom,
+            transparent 60%,
+            rgba(0, 0, 0, 0.3) 100%);
     opacity: 0;
     transition: opacity var(--transition-fast);
 }
@@ -1440,63 +1623,63 @@ button {
     :root {
         --section-padding: 60px 15px;
     }
-    
+
     .floating-nav ul {
         gap: 5px;
         padding: 12px 15px;
     }
-    
+
     .floating-nav li a {
         font-size: 0.65rem;
         padding: 6px 10px;
     }
-    
+
     .entry-initials .separator {
         height: 100px;
     }
-    
+
     .countdown-timer {
         gap: 8px;
     }
-    
+
     .countdown-item {
         min-width: 70px;
         padding: 15px 10px;
     }
-    
+
     .countdown-separator {
         display: none;
     }
-    
+
     .timeline {
         padding-left: 25px;
     }
-    
+
     .timeline-item {
         padding-left: 25px;
     }
-    
+
     .timeline-marker {
         left: -25px;
         width: 14px;
         height: 14px;
     }
-    
+
     .gallery-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 10px;
     }
-    
+
     .rsvp-btn {
         width: 100%;
         justify-content: center;
     }
-    
+
     .modal-content {
         padding: 30px 25px;
         width: 95%;
     }
-    
+
     .lightbox-prev,
     .lightbox-next {
         font-size: 1.5rem;
@@ -1508,15 +1691,15 @@ button {
     .entry-initials .initial {
         font-size: 4rem;
     }
-    
+
     .entry-initials .separator {
         height: 80px;
     }
-    
+
     .countdown-item {
         min-width: 60px;
     }
-    
+
     .gallery-grid {
         grid-template-columns: 1fr;
     }
