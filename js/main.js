@@ -26,7 +26,7 @@
     // ==================== CONFIGURATION ====================
     const config = {
         brideWhatsApp: '529613030443',
-        groomWhatsApp: null, // Pending
+        groomWhatsApp: '529611030648',
         eventDate: '15 de marzo de 2026',
         eventTime: '5:00 pm'
     };
@@ -212,15 +212,19 @@
     }
 
     // ==================== RSVP / WHATSAPP ====================
+    let selectedWhatsApp = config.brideWhatsApp; // Default to bride
+
     function initRSVP() {
-        // Bride button - Opens form modal
+        // Bride button - Opens form modal (sends to bride)
         confirmBrideBtn?.addEventListener('click', () => {
+            selectedWhatsApp = config.brideWhatsApp;
             openModal(whatsappModal);
         });
 
-        // Groom button - Shows pending modal
+        // Groom button - Opens form modal (sends to groom)
         confirmGroomBtn?.addEventListener('click', () => {
-            openModal(pendingModal);
+            selectedWhatsApp = config.groomWhatsApp;
+            openModal(whatsappModal);
         });
 
         // Form submission
@@ -238,7 +242,7 @@
 
             // Build WhatsApp message
             const message = buildWhatsAppMessage(name, guests, note);
-            const whatsappUrl = `https://wa.me/${config.brideWhatsApp}?text=${encodeURIComponent(message)}`;
+            const whatsappUrl = `https://wa.me/${selectedWhatsApp}?text=${encodeURIComponent(message)}`;
 
             // Open WhatsApp
             window.open(whatsappUrl, '_blank');

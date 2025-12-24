@@ -1027,33 +1027,41 @@ button {
     box-shadow: var(--shadow-medium);
 }
 
-.map-placeholder {
-    height: 300px;
+.map-placeholder,
+.map-address {
+    min-height: 200px;
     background: var(--off-white);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding: 40px 20px;
     color: var(--text-light);
 }
 
-.map-placeholder svg {
+.map-placeholder svg,
+.map-address svg {
     width: 60px;
     height: 60px;
     margin-bottom: 15px;
     color: var(--gold);
 }
 
-.map-placeholder p {
+.map-placeholder p,
+.map-address .address-text {
     font-family: var(--font-serif);
     font-size: 1.2rem;
-    color: var(--text-medium);
+    color: var(--text-dark);
     margin-bottom: 5px;
+    text-align: center;
 }
 
-.map-placeholder span {
+.map-placeholder span,
+.map-address .address-city {
     font-family: var(--font-sans);
-    font-size: 0.85rem;
+    font-size: 0.95rem;
+    color: var(--text-medium);
+    text-align: center;
 }
 
 .location-buttons {
