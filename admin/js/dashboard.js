@@ -197,17 +197,51 @@ async function loadPasses() {
     const supabase = getSupabase();
     const { data, error } = await supabase
         .from('guest_passes')
-        .select(`
-            *,
-            tables (table_number),
-            creator:user_profiles!guest_passes_created_by_fkey (first_name, role)
-        `)
+        .select(`*, tables (table_number)`)
         .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error('Error loading passes:', error);
+        return;
+    }
 
     if (data) {
         passes = data;
+
+        // Load creator profiles for passes
+        await loadCreatorProfiles();
+
         loadRecentPasses();
         loadGuests();
+    }
+}
+
+// Load creator profiles for all passes
+async function loadCreatorProfiles() {
+    const supabase = getSupabase();
+
+    // Get unique creator IDs
+    const creatorIds = [...new Set(passes.map(p => p.created_by).filter(Boolean))];
+
+    if (creatorIds.length === 0) return;
+
+    const { data: profiles } = await supabase
+        .from('user_profiles')
+        .select('id, first_name, role')
+        .in('id', creatorIds);
+
+    if (profiles) {
+        // Create lookup map
+        profiles.forEach(p => {
+            userProfiles[p.id] = p;
+        });
+
+        // Attach creator info to passes
+        passes.forEach(pass => {
+            if (pass.created_by && userProfiles[pass.created_by]) {
+                pass.creator = userProfiles[pass.created_by];
+            }
+        });
     }
 }
 
