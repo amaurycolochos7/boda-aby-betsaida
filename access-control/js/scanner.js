@@ -1,5 +1,8 @@
 // Scanner Module for Access Control
-const supabase = window.supabaseClient;
+// Use supabaseClient from window (loaded by supabase-config.js)
+function getSupabase() {
+    return window.supabaseClient;
+}
 
 // State
 let currentUser = null;
@@ -18,7 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // Check authentication
 async function checkAuth() {
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session } } = await getSupabase().auth.getSession();
 
     if (!session) {
         window.location.href = 'index.html';
@@ -38,7 +41,7 @@ async function loadData() {
 
 // Load passes
 async function loadPasses() {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
         .from('guest_passes')
         .select(`
             *,
@@ -54,7 +57,7 @@ async function loadPasses() {
 
 // Load entry logs
 async function loadEntryLogs() {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
         .from('entry_logs')
         .select(`
             *,
@@ -201,7 +204,7 @@ async function showGuestByCode(code) {
 
     if (!pass) {
         // Try to fetch from database (might not be confirmed yet)
-        const { data, error } = await supabase
+        const { data, error } = await getSupabase()
             .from('guest_passes')
             .select(`*, tables (table_number)`)
             .eq('access_code', code)
@@ -267,7 +270,7 @@ async function confirmEntry() {
 
     try {
         // Create entry log
-        const { error: logError } = await supabase
+        const { error: logError } = await getSupabase()
             .from('entry_logs')
             .insert({
                 guest_pass_id: currentPass.id,
@@ -281,7 +284,7 @@ async function confirmEntry() {
         const newEntered = currentPass.guests_entered + enteringCount;
         const allEntered = newEntered >= currentPass.total_guests;
 
-        const { error: updateError } = await supabase
+        const { error: updateError } = await getSupabase()
             .from('guest_passes')
             .update({
                 guests_entered: newEntered,
@@ -319,7 +322,7 @@ function cancelEntry() {
 // Initialize realtime subscription
 function initRealtime() {
     // Subscribe to entry_logs changes
-    supabase
+    getSupabase()
         .channel('entry_logs_changes')
         .on('postgres_changes',
             { event: 'INSERT', schema: 'public', table: 'entry_logs' },
@@ -330,7 +333,7 @@ function initRealtime() {
         .subscribe();
 
     // Subscribe to guest_passes changes
-    supabase
+    getSupabase()
         .channel('passes_changes')
         .on('postgres_changes',
             { event: '*', schema: 'public', table: 'guest_passes' },
@@ -350,7 +353,7 @@ async function logout() {
             await html5QrCode.stop();
         } catch (e) { }
     }
-    await supabase.auth.signOut();
+    await getSupabase().auth.signOut();
     window.location.href = 'index.html';
 }
 
