@@ -172,7 +172,7 @@ async function showConfirmation(pass, alreadyConfirmed = false) {
         if (headerTitle) headerTitle.innerHTML = '¡Ya confirmaste!<br><small style="font-size: 0.5em; color: var(--text-muted);">Tu código QR sigue siendo válido</small>';
     } else {
         // First time confirmation
-        if (successIcon) successIcon.textContent = '🎉';
+        if (successIcon) successIcon.textContent = '✓';
         if (headerTitle) headerTitle.textContent = '¡Confirmado!';
     }
 

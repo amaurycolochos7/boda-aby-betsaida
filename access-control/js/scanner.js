@@ -273,7 +273,7 @@ function displayGuestInfo(pass) {
 
     // Highlight if already all inside
     if (remaining === 0) {
-        showToast('⚠️ Esta familia ya está completa dentro', 'warning');
+        showToast('[!] Esta familia ya está completa dentro', 'warning');
     }
 }
 
@@ -323,7 +323,7 @@ async function confirmEntry() {
         if (updateError) throw updateError;
 
         // Success feedback
-        showToast(`✓ ${enteringCount} persona(s) de ${currentPass.family_name} registradas`, 'success');
+        showToast(`${enteringCount} persona(s) de ${currentPass.family_name} registradas`, 'success');
 
         // Sound/vibration feedback if available
         if (navigator.vibrate) navigator.vibrate(200);

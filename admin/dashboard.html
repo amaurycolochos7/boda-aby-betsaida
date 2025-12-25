@@ -186,7 +186,7 @@
                 </div>
 
                 <div class="config-section">
-                    <h2>⚙️ Parámetros del Evento</h2>
+                    <h2>Parámetros del Evento</h2>
                     <form id="tables-config-form" class="pass-form">
                         <div class="form-row">
                             <div class="config-item">
@@ -213,7 +213,7 @@
                 </div>
 
                 <div class="config-section">
-                    <h2>🪑 Distribución de Mesas</h2>
+                    <h2>Distribución de Mesas</h2>
                     <p style="color: var(--text-muted); margin-bottom: 1rem;">
                         Capacidad total: <strong id="total-capacity">0</strong> personas
                     </p>
@@ -268,29 +268,15 @@
                         <div class="code" id="pass-code">XXXX</div>
                         <p>Comparte este código con la familia para que confirmen su asistencia</p>
                         <button class="copy-btn" onclick="copyCode()">
-                            📋 Copiar Código
+                            Copiar Código
                         </button>
                     </div>
                 </div>
 
                 <div class="config-section">
-                    <h2>📋 Pases Recientes</h2>
-                    <div class="guests-table-container">
-                        <table class="guests-table">
-                            <thead>
-                                <tr>
-                                    <th>Código</th>
-                                    <th>Familia</th>
-                                    <th>Invitados</th>
-                                    <th>Mesa</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="recent-passes">
-                                <!-- Passes will be loaded here -->
-                            </tbody>
-                        </table>
+                    <h2>Pases Recientes</h2>
+                    <div id="recent-passes" class="recent-passes-grid">
+                        <!-- Recent passes cards will be loaded here -->
                     </div>
                 </div>
             </section>
@@ -322,25 +308,8 @@
                         </div>
                     </div>
 
-                    <div class="guests-table-container">
-                        <table class="guests-table">
-                            <thead>
-                                <tr>
-                                    <th>Código</th>
-                                    <th>Familia</th>
-                                    <th>Invitados</th>
-                                    <th>Dentro</th>
-                                    <th>Mesa</th>
-                                    <th>Estado</th>
-                                    <th>Creado por</th>
-                                    <th>Confirmado</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="guests-list">
-                                <!-- Guests will be loaded here -->
-                            </tbody>
-                        </table>
+                    <div id="guests-list" class="guests-grid">
+                        <!-- Guest cards will be loaded here -->
                     </div>
                 </div>
             </section>

@@ -230,12 +230,24 @@ async function loadCreatorProfiles() {
     // Get unique creator IDs
     const creatorIds = [...new Set(passes.map(p => p.created_by).filter(Boolean))];
 
-    if (creatorIds.length === 0) return;
+    console.log('Loading creator profiles for IDs:', creatorIds);
 
-    const { data: profiles } = await supabase
+    if (creatorIds.length === 0) {
+        console.log('No creator IDs found');
+        return;
+    }
+
+    const { data: profiles, error } = await supabase
         .from('user_profiles')
         .select('id, first_name, role')
         .in('id', creatorIds);
+
+    if (error) {
+        console.error('Error loading creator profiles:', error);
+        return;
+    }
+
+    console.log('Loaded creator profiles:', profiles);
 
     if (profiles) {
         // Create lookup map
@@ -247,6 +259,9 @@ async function loadCreatorProfiles() {
         passes.forEach(pass => {
             if (pass.created_by && userProfiles[pass.created_by]) {
                 pass.creator = userProfiles[pass.created_by];
+                console.log(`Attached creator to pass ${pass.access_code}:`, pass.creator);
+            } else {
+                console.warn(`No creator found for pass ${pass.access_code}, created_by:`, pass.created_by);
             }
         });
     }
@@ -479,67 +494,163 @@ function copyCode() {
     });
 }
 
-// Load recent passes table
+// Load recent passes with compact card design
 function loadRecentPasses() {
-    const tbody = document.getElementById('recent-passes');
-    if (!tbody) return;
+    const container = document.getElementById('recent-passes');
+    if (!container) return;
 
     const recent = passes.slice(0, 10);
 
-    tbody.innerHTML = recent.map(pass => {
+    if (recent.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state-compact">
+                <p>No hay pases creados aún</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = recent.map(pass => {
         const status = getPassStatus(pass);
         const tableNum = pass.tables?.table_number || '-';
 
         return `
-            <tr>
-                <td><code>${pass.access_code}</code></td>
-                <td>${pass.family_name}</td>
-                <td>${pass.total_guests}</td>
-                <td>Mesa ${tableNum}</td>
-                <td><span class="status-badge ${status.class}">${status.text}</span></td>
-                <td>
-                    <button class="btn btn-secondary" onclick="copyPassCode('${pass.access_code}')" style="padding: 0.5rem 1rem; font-size: 0.8rem;">
-                        📋 Copiar
-                    </button>
-                </td>
-            </tr>
+            <div class="recent-pass-card">
+                <div class="recent-pass-info">
+                    <div class="recent-pass-header">
+                        <span class="recent-pass-family">${pass.family_name}</span>
+                        <code class="recent-pass-code">${pass.access_code}</code>
+                    </div>
+                    <div class="recent-pass-details">
+                        <span class="detail-item">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            ${pass.total_guests}
+                        </span>
+                        <span class="detail-item">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12,6 12,12 16,14"></polyline>
+                            </svg>
+                            Mesa ${tableNum}
+                        </span>
+                        <span class="status-badge ${status.class}">${status.text}</span>
+                    </div>
+                </div>
+                <button class="btn-copy-compact" onclick="copyPassCode('${pass.access_code}')" title="Copiar código">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </button>
+            </div>
         `;
     }).join('');
 }
 
-// Load guests list
+// Load guests list with improved card-based design
 function loadGuests() {
-    const tbody = document.getElementById('guests-list');
-    if (!tbody) return;
+    const container = document.getElementById('guests-list');
+    if (!container) return;
 
-    tbody.innerHTML = passes.map(pass => {
+    if (passes.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">-</div>
+                <h3>No hay invitados registrados</h3>
+                <p>Comienza creando pases de invitación en la sección "Crear Pases"</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = passes.map(pass => {
         const status = getPassStatus(pass);
         const tableNum = pass.tables?.table_number || '-';
         const confirmedDate = pass.confirmed_at
-            ? new Date(pass.confirmed_at).toLocaleDateString('es-MX')
+            ? new Date(pass.confirmed_at).toLocaleDateString('es-MX', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            })
             : '-';
-        const creatorName = pass.creator?.first_name || 'Desconocido';
+        // Debug: Log creator info
+        if (!pass.creator) {
+            console.warn('No creator data for pass:', pass.access_code, 'created_by:', pass.created_by);
+        }
+
+        const creatorName = pass.creator?.first_name || 'N/A';
         const creatorRole = pass.creator?.role || 'unknown';
+        const creatorLabel = creatorRole === 'groom' ? 'Novio' :
+            creatorRole === 'bride' ? 'Novia' : 'Sin asignar';
 
         return `
-            <tr data-status="${status.class}" data-family="${pass.family_name.toLowerCase()}" data-id="${pass.id}" data-creator-role="${creatorRole}">
-                <td data-label="Código"><code>${pass.access_code}</code></td>
-                <td data-label="Familia">${pass.family_name}</td>
-                <td data-label="Total Invitados">${pass.total_guests}</td>
-                <td data-label="Entrada">${pass.guests_entered} / ${pass.total_guests}</td>
-                <td data-label="Mesa">Mesa ${tableNum}</td>
-                <td data-label="Estado"><span class="status-badge ${status.class}">${status.text}</span></td>
-                <td data-label="Creado Por"><span class="creator-badge ${creatorRole}">${creatorName}</span></td>
-                <td data-label="Confirmado">${confirmedDate}</td>
-                <td class="actions-cell">
-                    <button class="btn-icon edit" onclick="editPass('${pass.id}')" title="Editar">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            <div class="guest-card" data-status="${status.class}" data-family="${pass.family_name.toLowerCase()}" data-id="${pass.id}" data-creator-role="${creatorRole}">
+                <!-- Header -->
+                <div class="guest-card-header">
+                    <div class="guest-card-title">
+                        <h3>${pass.family_name}</h3>
+                        <code class="guest-code">${pass.access_code}</code>
+                    </div>
+                    <span class="status-badge ${status.class}">${status.text}</span>
+                </div>
+
+                <!-- Main Info Grid -->
+                <div class="guest-card-body">
+                    <div class="info-row">
+                        <div class="info-item">
+                            <label>INVITADOS</label>
+                            <span class="info-value">${pass.total_guests} persona${pass.total_guests > 1 ? 's' : ''}</span>
+                        </div>
+                        
+                        <div class="info-item">
+                            <label>ENTRADA</label>
+                            <span class="info-value">
+                                <strong>${pass.guests_entered}</strong> de ${pass.total_guests}
+                            </span>
+                        </div>
+
+                        <div class="info-item">
+                            <label>MESA</label>
+                            <span class="info-value">Mesa ${tableNum}</span>
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-item">
+                            <label>CREADO POR</label>
+                            <span class="creator-badge ${creatorRole}">${creatorLabel}: ${creatorName}</span>
+                        </div>
+
+                        <div class="info-item">
+                            <label>CONFIRMADO</label>
+                            <span class="info-value">${confirmedDate}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="guest-card-actions">
+                    <button class="btn-card edit" onclick="editPass('${pass.id}')" title="Editar invitación">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                        Editar
                     </button>
-                    <button class="btn-icon delete" onclick="deletePass('${pass.id}')" title="Eliminar">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    <button class="btn-card delete" onclick="deletePass('${pass.id}')" title="Eliminar invitación">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                        Eliminar
                     </button>
-                </td>
-            </tr>
+                </div>
+            </div>
         `;
     }).join('');
 }
@@ -621,7 +732,7 @@ function editPass(passId) {
         <div class="table-modal-overlay" onclick="closeEditModal()"></div>
         <div class="table-modal-content">
             <button class="table-modal-close" onclick="closeEditModal()">×</button>
-            <h2>✏️ Editar Pase</h2>
+            <h2>Editar Pase</h2>
             <p class="modal-subtitle">Código: <code>${pass.access_code}</code></p>
             
             <form id="edit-pass-form" class="edit-form">
@@ -770,7 +881,7 @@ function showToast(message, type = 'info') {
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     toast.innerHTML = `
-        <span>${type === 'success' ? '✓' : type === 'error' ? '✗' : 'ℹ'}</span>
+        <span class="toast-icon ${type}"></span>
         <span>${message}</span>
     `;
     container.appendChild(toast);
@@ -825,7 +936,7 @@ function showTableGuests(tableId, tableNumber) {
         <div class="table-modal-overlay" onclick="closeTableModal()"></div>
         <div class="table-modal-content">
             <button class="table-modal-close" onclick="closeTableModal()">×</button>
-            <h2>🪑 Mesa ${tableNumber}</h2>
+            <h2>Mesa ${tableNumber}</h2>
             <p class="modal-subtitle">Invitados asignados</p>
             ${guestListHTML}
         </div>
