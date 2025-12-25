@@ -197,7 +197,7 @@ function renderTablesGrid() {
             occupiedPercent >= 50 ? 'partial' : 'empty';
 
         return `
-            <div class="table-item ${statusClass}">
+            <div class="table-item ${statusClass}" onclick="showTableGuests('${table.id}', ${table.table_number})" style="cursor: pointer;">
                 <div class="table-number">Mesa ${table.table_number}</div>
                 <div class="table-occupancy">
                     ${table.occupied_seats} / ${table.capacity}
@@ -532,6 +532,70 @@ function showToast(message, type = 'info') {
     setTimeout(() => toast.remove(), 4000);
 }
 
+// Show guests for a specific table
+function showTableGuests(tableId, tableNumber) {
+    // Find guests assigned to this table
+    const tableGuests = passes.filter(p => p.table_id === tableId);
+
+    // Create or get modal
+    let modal = document.getElementById('table-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'table-modal';
+        modal.className = 'table-modal';
+        document.body.appendChild(modal);
+    }
+
+    // Build guest list
+    let guestListHTML = '';
+    if (tableGuests.length === 0) {
+        guestListHTML = '<p class="no-guests">No hay invitados asignados a esta mesa</p>';
+    } else {
+        guestListHTML = `
+            <div class="table-guest-list">
+                ${tableGuests.map(guest => {
+            const status = getPassStatus(guest);
+            return `
+                        <div class="table-guest-item">
+                            <div class="guest-info">
+                                <strong>${guest.family_name}</strong>
+                                <span class="guest-count">${guest.total_guests} persona${guest.total_guests > 1 ? 's' : ''}</span>
+                            </div>
+                            <div class="guest-status">
+                                <span class="status-badge ${status.class}">${status.text}</span>
+                                <code>${guest.access_code}</code>
+                            </div>
+                        </div>
+                    `;
+        }).join('')}
+            </div>
+            <div class="table-summary">
+                <p>Total: <strong>${tableGuests.reduce((sum, g) => sum + g.total_guests, 0)}</strong> personas</p>
+            </div>
+        `;
+    }
+
+    modal.innerHTML = `
+        <div class="table-modal-overlay" onclick="closeTableModal()"></div>
+        <div class="table-modal-content">
+            <button class="table-modal-close" onclick="closeTableModal()">×</button>
+            <h2>🪑 Mesa ${tableNumber}</h2>
+            <p class="modal-subtitle">Invitados asignados</p>
+            ${guestListHTML}
+        </div>
+    `;
+
+    modal.classList.add('active');
+}
+
+// Close table modal
+function closeTableModal() {
+    const modal = document.getElementById('table-modal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
 // Add additional CSS for dashboard elements
 const style = document.createElement('style');
 style.textContent = `
@@ -703,5 +767,151 @@ style.textContent = `
         width: 20px;
         height: 20px;
     }
+    
+    /* Table Modal Styles */
+    .table-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .table-modal.active {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    .table-modal-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(5px);
+    }
+    
+    .table-modal-content {
+        position: relative;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 2rem;
+        width: 90%;
+        max-width: 450px;
+        max-height: 80vh;
+        overflow-y: auto;
+        transform: translateY(20px);
+        transition: transform 0.3s ease;
+    }
+    
+    .table-modal.active .table-modal-content {
+        transform: translateY(0);
+    }
+    
+    .table-modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1.5rem;
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        font-size: 2rem;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+    
+    .table-modal-close:hover {
+        color: var(--error);
+    }
+    
+    .table-modal-content h2 {
+        font-family: var(--font-display);
+        font-size: 1.75rem;
+        margin-bottom: 0.25rem;
+        color: var(--primary);
+    }
+    
+    .modal-subtitle {
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+    }
+    
+    .table-guest-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .table-guest-item {
+        background: var(--surface-light);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .table-guest-item:hover {
+        border-color: var(--primary);
+    }
+    
+    .guest-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .guest-info strong {
+        color: var(--text);
+    }
+    
+    .guest-count {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+    }
+    
+    .guest-status {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.5rem;
+    }
+    
+    .table-summary {
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+        text-align: center;
+        color: var(--text-muted);
+    }
+    
+    .table-summary strong {
+        color: var(--primary);
+        font-size: 1.25rem;
+    }
+    
+    .no-guests {
+        text-align: center;
+        color: var(--text-muted);
+        padding: 2rem;
+        font-style: italic;
+    }
+    
+    .table-item:hover {
+        border-color: var(--primary);
+        transform: translateY(-2px);
+    }
 `;
 document.head.appendChild(style);
+
