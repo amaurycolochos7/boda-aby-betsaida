@@ -452,7 +452,7 @@ function loadGuests() {
             : '-';
 
         return `
-            <tr data-status="${status.class}" data-family="${pass.family_name.toLowerCase()}">
+            <tr data-status="${status.class}" data-family="${pass.family_name.toLowerCase()}" data-id="${pass.id}">
                 <td><code>${pass.access_code}</code></td>
                 <td>${pass.family_name}</td>
                 <td>${pass.total_guests}</td>
@@ -460,6 +460,14 @@ function loadGuests() {
                 <td>Mesa ${tableNum}</td>
                 <td><span class="status-badge ${status.class}">${status.text}</span></td>
                 <td>${confirmedDate}</td>
+                <td class="actions-cell">
+                    <button class="btn-icon edit" onclick="editPass('${pass.id}')" title="Editar">
+                        ✏️
+                    </button>
+                    <button class="btn-icon delete" onclick="deletePass('${pass.id}')" title="Eliminar">
+                        🗑️
+                    </button>
+                </td>
             </tr>
         `;
     }).join('');
@@ -507,6 +515,134 @@ function copyPassCode(code) {
     navigator.clipboard.writeText(code).then(() => {
         showToast('Código copiado', 'success');
     });
+}
+
+// Edit pass - show modal
+function editPass(passId) {
+    const pass = passes.find(p => p.id === passId);
+    if (!pass) return;
+
+    // Create or get modal
+    let modal = document.getElementById('edit-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'edit-modal';
+        modal.className = 'table-modal';
+        document.body.appendChild(modal);
+    }
+
+    const tableNum = pass.tables?.table_number || '';
+
+    modal.innerHTML = `
+        <div class="table-modal-overlay" onclick="closeEditModal()"></div>
+        <div class="table-modal-content">
+            <button class="table-modal-close" onclick="closeEditModal()">×</button>
+            <h2>✏️ Editar Pase</h2>
+            <p class="modal-subtitle">Código: <code>${pass.access_code}</code></p>
+            
+            <form id="edit-pass-form" class="edit-form">
+                <input type="hidden" id="edit-pass-id" value="${pass.id}">
+                <input type="hidden" id="edit-old-guests" value="${pass.total_guests}">
+                <input type="hidden" id="edit-old-table" value="${pass.table_id}">
+                
+                <div class="form-group">
+                    <label>Nombre de la Familia</label>
+                    <input type="text" id="edit-family" value="${pass.family_name}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Número de Invitados</label>
+                    <input type="number" id="edit-guests" value="${pass.total_guests}" min="1" max="20" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Mesa</label>
+                    <select id="edit-table" required>
+                        ${tables.map(t => `
+                            <option value="${t.id}" ${t.id === pass.table_id ? 'selected' : ''}>
+                                Mesa ${t.table_number} (${t.capacity - t.occupied_seats} disponibles)
+                            </option>
+                        `).join('')}
+                    </select>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    `;
+
+    modal.classList.add('active');
+
+    // Add form submit handler
+    document.getElementById('edit-pass-form').addEventListener('submit', savePassEdit);
+}
+
+// Save pass edit
+async function savePassEdit(e) {
+    e.preventDefault();
+    const supabase = getSupabase();
+
+    const passId = document.getElementById('edit-pass-id').value;
+    const newFamily = document.getElementById('edit-family').value.trim();
+    const newGuests = parseInt(document.getElementById('edit-guests').value);
+    const newTableId = document.getElementById('edit-table').value;
+    const oldGuests = parseInt(document.getElementById('edit-old-guests').value);
+    const oldTableId = document.getElementById('edit-old-table').value;
+
+    try {
+        // Update guest pass
+        await supabase
+            .from('guest_passes')
+            .update({
+                family_name: newFamily,
+                total_guests: newGuests,
+                table_id: newTableId
+            })
+            .eq('id', passId);
+
+        // Update table occupancy if table or guest count changed
+        if (newTableId !== oldTableId || newGuests !== oldGuests) {
+            // Free old table seats
+            if (oldTableId) {
+                const oldTable = tables.find(t => t.id === oldTableId);
+                if (oldTable) {
+                    await supabase
+                        .from('tables')
+                        .update({ occupied_seats: Math.max(0, oldTable.occupied_seats - oldGuests) })
+                        .eq('id', oldTableId);
+                }
+            }
+
+            // Occupy new table seats
+            const newTable = tables.find(t => t.id === newTableId);
+            if (newTable) {
+                await supabase
+                    .from('tables')
+                    .update({ occupied_seats: newTable.occupied_seats + newGuests })
+                    .eq('id', newTableId);
+            }
+        }
+
+        closeEditModal();
+        showToast('Pase actualizado correctamente', 'success');
+        await loadTables();
+        await loadPasses();
+        updateStats();
+
+    } catch (error) {
+        showToast('Error al actualizar: ' + error.message, 'error');
+    }
+}
+
+// Close edit modal
+function closeEditModal() {
+    const modal = document.getElementById('edit-modal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
 }
 
 // Delete pass
@@ -944,6 +1080,75 @@ style.textContent = `
     .table-item:hover {
         border-color: var(--primary);
         transform: translateY(-2px);
+    }
+    
+    /* Action buttons */
+    .actions-cell {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+    }
+    
+    .btn-icon {
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+    }
+    
+    .btn-icon.edit:hover {
+        border-color: var(--primary);
+        background: rgba(184, 134, 11, 0.1);
+    }
+    
+    .btn-icon.delete:hover {
+        border-color: var(--error);
+        background: rgba(231, 76, 60, 0.1);
+    }
+    
+    /* Edit Form */
+    .edit-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+    
+    .edit-form .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .edit-form label {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+    
+    .edit-form input,
+    .edit-form select {
+        background: var(--surface-light);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 0.875rem 1rem;
+        color: var(--text);
+        font-size: 1rem;
+        font-family: var(--font-body);
+    }
+    
+    .edit-form input:focus,
+    .edit-form select:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 1rem;
     }
 `;
 document.head.appendChild(style);

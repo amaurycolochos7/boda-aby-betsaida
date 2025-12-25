@@ -139,14 +139,16 @@ USING (auth.uid() = id);
 -- First, create users in Supabase Authentication dashboard
 -- Then run this to set their roles:
 
--- For the groom:
--- INSERT INTO user_profiles (id, email, first_name, role)
--- VALUES ('USER_UUID_HERE', 'abidan@email.com', 'Abidan', 'groom');
+-- For the groom (Abi):
+INSERT INTO user_profiles (id, email, first_name, role)
+VALUES ('375c26ed-628d-49bb-a9d9-aee27ea64f45', 'abi@miboda.com', 'Abidan', 'groom')
+ON CONFLICT (id) DO UPDATE SET role = 'groom', first_name = 'Abidan';
 
--- For the bride:
--- INSERT INTO user_profiles (id, email, first_name, role)
--- VALUES ('USER_UUID_HERE', 'betsaida@email.com', 'Betsaida', 'bride');
+-- For the bride (Betsaida):
+INSERT INTO user_profiles (id, email, first_name, role)
+VALUES ('40cb3f00-02af-481c-89ac-6a4127b69100', 'betsi@miboda.com', 'Betsaida', 'bride')
+ON CONFLICT (id) DO UPDATE SET role = 'bride', first_name = 'Betsaida';
 
--- For access control:
+-- For access control (run later if needed):
 -- INSERT INTO user_profiles (id, email, first_name, role)
 -- VALUES ('USER_UUID_HERE', 'acceso@boda.com', 'Control', 'access_control');
