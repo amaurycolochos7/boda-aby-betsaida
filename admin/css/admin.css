@@ -715,82 +715,106 @@ body {
         padding: 0.75rem;
     }
 
-    /* Guests table responsive */
+    /* Tables to Cards transformation for Mobile */
     .guests-table-container,
     .table-container {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        margin-top: 1rem;
-        background: var(--surface);
-        border-radius: 10px;
-        border: 1px solid var(--border);
+        background: transparent;
+        border: none;
+        overflow: visible;
+        /* No scroll needed for cards */
     }
 
-    .guests-table {
-        min-width: 600px;
-        font-size: 0.85rem;
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .guests-table .actions-cell {
-        display: flex;
-        gap: 0.5rem;
-    }
-
-    /* Ocultar columnas menos importantes en mobile */
-    .guests-table th:nth-child(2),
-    /* Mesa - a veces importa, pero ocupa espacio */
-    .guests-table td:nth-child(2),
-    .guests-table th:nth-child(6),
-    /* Creado Por */
-    .guests-table td:nth-child(6),
-    .guests-table th:nth-child(7),
-    /* Confirmado Fecha */
-    .guests-table td:nth-child(7) {
+    .guests-table thead {
         display: none;
     }
 
-    .guests-table th,
+    .guests-table,
+    .guests-table tbody,
+    .guests-table tr,
     .guests-table td {
-        padding: 0.5rem 0.25rem;
-        font-size: 0.8rem;
-    }
-
-    /* Filters responsive */
-    .filters-row {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .status-filters {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
-    .creator-filter {
-        justify-content: center;
-    }
-
-    /* Search */
-    .search-box {
+        display: block;
         width: 100%;
     }
 
-    .search-box input {
-        width: 100%;
-    }
-
-    /* Create pass form */
-    .create-pass-form {
+    .guests-table tr {
+        margin-bottom: 1rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
         padding: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        position: relative;
     }
 
-    /* Section header */
-    .section-header {
-        flex-direction: column;
+    .guests-table td {
+        padding: 0.25rem 0;
+        border: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: right;
+    }
+
+    .guests-table td::before {
+        content: attr(data-label);
+        font-weight: 500;
+        color: var(--text-muted);
+        text-align: left;
+        margin-right: 1rem;
+    }
+
+    /* Column Specific Styling for Card Look */
+    /* Code */
+    .guests-table td:nth-child(1) {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        order: -1;
+    }
+
+    /* Family Name - Make it big and headline */
+    .guests-table td:nth-child(2) {
+        font-family: var(--font-display);
+        font-size: 1.2rem;
+        color: var(--primary);
+        font-weight: bold;
+        text-align: left;
+        display: block;
+        margin-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 0.5rem;
+    }
+
+    /* Restore previously hidden columns */
+    .guests-table td:nth-child(2),
+    .guests-table td:nth-child(6),
+    .guests-table td:nth-child(7) {
+        display: flex;
+        /* Restore visibility */
+    }
+
+    /* Status Badge Position */
+    .guests-table td:nth-child(6) {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: auto;
+        padding: 0;
+    }
+
+    /* Actions */
+    .guests-table td:last-child {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+        justify-content: flex-end;
         gap: 1rem;
-        align-items: stretch;
+    }
+
+    /* content-header fix */
+    .content-header {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 1rem;
     }
 }
 

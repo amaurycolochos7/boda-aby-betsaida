@@ -523,14 +523,14 @@ function loadGuests() {
 
         return `
             <tr data-status="${status.class}" data-family="${pass.family_name.toLowerCase()}" data-id="${pass.id}" data-creator-role="${creatorRole}">
-                <td><code>${pass.access_code}</code></td>
-                <td>${pass.family_name}</td>
-                <td>${pass.total_guests}</td>
-                <td>${pass.guests_entered} / ${pass.total_guests}</td>
-                <td>Mesa ${tableNum}</td>
-                <td><span class="status-badge ${status.class}">${status.text}</span></td>
-                <td><span class="creator-badge ${creatorRole}">${creatorName}</span></td>
-                <td>${confirmedDate}</td>
+                <td data-label="Código"><code>${pass.access_code}</code></td>
+                <td data-label="Familia">${pass.family_name}</td>
+                <td data-label="Total Invitados">${pass.total_guests}</td>
+                <td data-label="Entrada">${pass.guests_entered} / ${pass.total_guests}</td>
+                <td data-label="Mesa">Mesa ${tableNum}</td>
+                <td data-label="Estado"><span class="status-badge ${status.class}">${status.text}</span></td>
+                <td data-label="Creado Por"><span class="creator-badge ${creatorRole}">${creatorName}</span></td>
+                <td data-label="Confirmado">${confirmedDate}</td>
                 <td class="actions-cell">
                     <button class="btn-icon edit" onclick="editPass('${pass.id}')" title="Editar">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
@@ -1350,11 +1350,11 @@ function loadLiveMonitor() {
 
         return `
             <tr>
-                <td>${pass.family_name}</td>
-                <td>Mesa ${tableNum}</td>
-                <td><strong>${pass.guests_entered}</strong> / ${pass.total_guests}</td>
-                <td>~ ${time}</td>
-                <td><span class="status-badge ${isComplete ? 'complete' : 'partial'}">${isComplete ? 'Completo' : 'Parcial'}</span></td>
+                <td data-label="Familia">${pass.family_name}</td>
+                <td data-label="Mesa">Mesa ${tableNum}</td>
+                <td data-label="Entrada"><strong>${pass.guests_entered}</strong> / ${pass.total_guests}</td>
+                <td data-label="Hora">~ ${time}</td>
+                <td data-label="Estatus"><span class="status-badge ${isComplete ? 'complete' : 'partial'}">${isComplete ? 'Completo' : 'Parcial'}</span></td>
             </tr>
         `;
     }).join('');
