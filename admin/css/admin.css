@@ -640,8 +640,11 @@ body {
         top: 0;
         height: 100vh;
         width: 280px;
-        z-index: 1000;
+        z-index: 1002;
         transition: left 0.3s ease;
+        background: #0f0f0f;
+        border-right: 1px solid var(--primary);
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
     }
 
     .sidebar.open {

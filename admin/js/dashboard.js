@@ -92,6 +92,7 @@ function initNavigation() {
             // Refresh data for specific sections
             if (section === 'guests') loadGuests();
             if (section === 'passes') loadRecentPasses();
+            if (section === 'live-monitor') loadLiveMonitor();
         });
     });
 
@@ -133,6 +134,7 @@ function navigateToSection(section) {
     // Refresh data for specific sections
     if (section === 'guests') loadGuests();
     if (section === 'passes') loadRecentPasses();
+    if (section === 'live-monitor') loadLiveMonitor();
 }
 
 // Update current date display
@@ -146,12 +148,17 @@ function updateCurrentDate() {
 
 // Load all dashboard data
 async function loadDashboardData() {
+    await loadDashboardDataAsync();
+    initRealtime();
+}
+
+async function loadDashboardDataAsync() {
     await loadEventConfig();
     await loadTables();
     await loadPasses();
     updateStats();
+    updateCurrentDate();
 }
-
 // Load event configuration
 async function loadEventConfig() {
     const supabase = getSupabase();
@@ -741,6 +748,10 @@ async function deletePass(passId) {
             }
         }
 
+        // First delete entry logs to avoid foreign key constraints/persistence issues
+        await supabase.from('entry_logs').delete().eq('guest_pass_id', passId);
+
+        // Then delete the pass
         await supabase.from('guest_passes').delete().eq('id', passId);
 
         showToast('Pase eliminado', 'success');
@@ -1309,3 +1320,63 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// Load Live Monitor Data
+function loadLiveMonitor() {
+    // Filter passes that have entered guests
+    const activePasses = passes.filter(p => p.guests_entered > 0);
+
+    // Sort by most recent update (approximate entry time)
+    activePasses.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+
+    // Update stats
+    const totalInside = passes.reduce((sum, p) => sum + p.guests_entered, 0);
+    document.getElementById('live-total-inside').textContent = totalInside;
+    document.getElementById('live-families-inside').textContent = activePasses.length;
+
+    // Render table
+    const tbody = document.getElementById('live-guests-list');
+    if (!tbody) return;
+
+    if (activePasses.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 2rem;">Aún no hay invitados dentro del evento</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = activePasses.map(pass => {
+        const tableNum = pass.tables?.table_number || '-';
+        const isComplete = pass.guests_entered >= pass.total_guests;
+        const time = new Date(pass.updated_at).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+
+        return `
+            <tr>
+                <td>${pass.family_name}</td>
+                <td>Mesa ${tableNum}</td>
+                <td><strong>${pass.guests_entered}</strong> / ${pass.total_guests}</td>
+                <td>~ ${time}</td>
+                <td><span class="status-badge ${isComplete ? 'complete' : 'partial'}">${isComplete ? 'Completo' : 'Parcial'}</span></td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// Initialize Realtime Subscription
+function initRealtime() {
+    const supabase = getSupabase();
+    console.log('Initializing realtime subscription...');
+
+    supabase.channel('admin_dashboard')
+        .on('postgres_changes',
+            { event: '*', schema: 'public', table: 'guest_passes' },
+            payload => {
+                console.log('Realtime change:', payload);
+                loadPasses().then(() => {
+                    updateStats();
+                    const activeSection = document.querySelector('.sidebar-nav a.active')?.dataset.section;
+                    if (activeSection === 'live-monitor') loadLiveMonitor();
+                    if (activeSection === 'guests') loadGuests();
+                });
+            }
+        )
+        .subscribe();
+}

@@ -41,6 +41,15 @@
                         </a>
                     </li>
                     <li>
+                        <a href="#" data-section="live-monitor">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                            <span>En Vivo</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="#" data-section="tables">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2">
@@ -142,6 +151,31 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </section>
+
+            <!-- Live Monitor Section -->
+            <section id="section-live-monitor" class="dashboard-section">
+                <div class="content-header">
+                    <h1>🔴 Monitoreo en Vivo</h1>
+                    <p>Visualiza quiénes ya están dentro del evento</p>
+                </div>
+
+                <div class="table-container">
+                    <table class="guests-table">
+                        <thead>
+                            <tr>
+                                <th>Familia</th>
+                                <th>Mesa</th>
+                                <th>Ingresados / Total</th>
+                                <th>Hora de Ingreso</th>
+                                <th>Estatus</th>
+                            </tr>
+                        </thead>
+                        <tbody id="live-guests-list">
+                            <!-- Live updates here -->
+                        </tbody>
+                    </table>
                 </div>
             </section>
 
