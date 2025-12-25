@@ -1,17 +1,25 @@
 // Authentication Module for Admin Portal
 // Use supabaseClient from window (loaded by supabase-config.js)
 
-// Only run auth check on login page, not on dashboard
+// Check if we're on the login page
 const isLoginPage = window.location.pathname.includes('index.html') ||
     window.location.pathname.endsWith('/admin/') ||
     window.location.pathname.endsWith('/admin');
 
+// Check for logout flag
+const justLoggedOut = sessionStorage.getItem('justLoggedOut');
+if (justLoggedOut) {
+    sessionStorage.removeItem('justLoggedOut');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
 
-    // Only check auth redirect on login page
-    if (isLoginPage && loginForm) {
+    // Only check auth redirect on login page, and not if we just logged out
+    if (isLoginPage && loginForm && !justLoggedOut) {
         checkAuth();
+        loginForm.addEventListener('submit', handleLogin);
+    } else if (isLoginPage && loginForm) {
         loginForm.addEventListener('submit', handleLogin);
     }
 });
@@ -93,9 +101,23 @@ async function handleLogin(e) {
     }
 }
 
-// Logout function
+// Logout function - properly sign out and prevent auto-login
 async function logout() {
     const supabase = window.supabaseClient;
-    await supabase.auth.signOut();
-    window.location.href = 'index.html';
+
+    try {
+        // Sign out from Supabase
+        await supabase.auth.signOut();
+
+        // Set flag to prevent auto-redirect on login page
+        sessionStorage.setItem('justLoggedOut', 'true');
+
+        // Redirect to login
+        window.location.href = 'index.html';
+    } catch (error) {
+        console.error('Logout error:', error);
+        // Force redirect anyway
+        sessionStorage.setItem('justLoggedOut', 'true');
+        window.location.href = 'index.html';
+    }
 }
