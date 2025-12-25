@@ -259,11 +259,47 @@ async function loadCreatorProfiles() {
         passes.forEach(pass => {
             if (pass.created_by && userProfiles[pass.created_by]) {
                 pass.creator = userProfiles[pass.created_by];
-                console.log(`Attached creator to pass ${pass.access_code}:`, pass.creator);
-            } else {
-                console.warn(`No creator found for pass ${pass.access_code}, created_by:`, pass.created_by);
             }
         });
+
+        // Update filter counts
+        updateCreatorFilterCounts();
+    }
+}
+
+// Update creator filter counts
+function updateCreatorFilterCounts() {
+    let totalGuests = 0;
+    let groomGuests = 0;
+    let brideGuests = 0;
+
+    passes.forEach(pass => {
+        const guests = pass.total_guests || 0;
+        totalGuests += guests;
+
+        if (pass.creator) {
+            if (pass.creator.role === 'groom') {
+                groomGuests += guests;
+            } else if (pass.creator.role === 'bride') {
+                brideGuests += guests;
+            }
+        }
+    });
+
+    // Update select options
+    const select = document.getElementById('creator-filter');
+    if (select) {
+        // Update options text while preserving values
+        for (let i = 0; i < select.options.length; i++) {
+            const option = select.options[i];
+            if (option.value === 'all') {
+                option.textContent = `Todos (${totalGuests} invitados)`;
+            } else if (option.value === 'groom') {
+                option.textContent = `Abidan (${groomGuests} invitados)`;
+            } else if (option.value === 'bride') {
+                option.textContent = `Betsaida (${brideGuests} invitados)`;
+            }
+        }
     }
 }
 
@@ -318,16 +354,33 @@ function renderTablesGrid() {
 // Populate table select dropdown
 function populateTableSelect() {
     const select = document.getElementById('table-select');
+    const guestInput = document.getElementById('guest-count');
     if (!select) return;
+
+    const requiredSeats = guestInput ? parseInt(guestInput.value) || 0 : 0;
+    const currentSelection = select.value;
 
     select.innerHTML = '<option value="">Selecciona una mesa</option>' +
         tables.map(table => {
             const available = table.capacity - table.occupied_seats;
-            const disabled = available <= 0 ? 'disabled' : '';
+            // Disable if fully occupied OR if not enough space for required seats
+            const isEnoughSpace = requiredSeats > 0 ? available >= requiredSeats : available > 0;
+            const disabled = !isEnoughSpace ? 'disabled' : '';
+
             return `<option value="${table.id}" ${disabled}>
                 Mesa ${table.table_number} (${available} lugares disponibles)
             </option>`;
         }).join('');
+
+    // Restore selection if still valid
+    if (currentSelection) {
+        const option = select.querySelector(`option[value="${currentSelection}"]`);
+        if (option && !option.disabled) {
+            select.value = currentSelection;
+        } else {
+            select.value = ''; // Reset if selected table is no longer valid
+        }
+    }
 }
 
 // Initialize forms
@@ -342,6 +395,13 @@ function initForms() {
     const passForm = document.getElementById('create-pass-form');
     if (passForm) {
         passForm.addEventListener('submit', handleCreatePass);
+
+        // Add listener for guest count changes
+        const guestInput = document.getElementById('guest-count');
+        if (guestInput) {
+            guestInput.addEventListener('input', () => populateTableSelect());
+            guestInput.addEventListener('change', () => populateTableSelect());
+        }
     }
 }
 
@@ -416,9 +476,23 @@ async function handleCreatePass(e) {
     const familyName = document.getElementById('family-name').value.trim();
     const guestCount = parseInt(document.getElementById('guest-count').value);
     const tableId = document.getElementById('table-select').value;
+    const phone = document.getElementById('family-phone').value.trim();
 
     if (!familyName || !tableId) {
         showToast('Por favor completa todos los campos', 'error');
+        return;
+    }
+
+    // Verify capacity again (double check)
+    const table = tables.find(t => t.id === tableId);
+    if (!table) {
+        showToast('Mesa no encontrada', 'error');
+        return;
+    }
+
+    const available = table.capacity - table.occupied_seats;
+    if (guestCount > available) {
+        showToast(`La Mesa ${table.table_number} solo tiene ${available} lugares disponibles`, 'error');
         return;
     }
 
@@ -451,9 +525,9 @@ async function handleCreatePass(e) {
                 family_name: familyName,
                 total_guests: guestCount,
                 table_id: tableId,
-                created_by: currentUser.id
+                created_by: currentUser.id,
+                phone: phone || null
             })
-            .select()
             .single();
 
         if (error) throw error;
@@ -471,6 +545,7 @@ async function handleCreatePass(e) {
 
         // Reset form
         document.getElementById('family-name').value = '';
+        document.getElementById('family-phone').value = '';
         document.getElementById('guest-count').value = '2';
         document.getElementById('table-select').value = '';
 
@@ -547,6 +622,7 @@ function loadRecentPasses() {
                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                     </svg>
                 </button>
+                ${getWhatsAppButton(pass, 'compact')}
             </div>
         `;
     }).join('');
@@ -634,22 +710,23 @@ function loadGuests() {
                 </div>
 
                 <!-- Actions -->
-                <div class="guest-card-actions">
-                    <button class="btn-card edit" onclick="editPass('${pass.id}')" title="Editar invitación">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                        </svg>
-                        Editar
-                    </button>
-                    <button class="btn-card delete" onclick="deletePass('${pass.id}')" title="Eliminar invitación">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="3 6 5 6 21 6"></polyline>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                        </svg>
-                        Eliminar
-                    </button>
-                </div>
+                    <div class="guest-card-actions">
+                        ${getWhatsAppButton(pass, 'card')}
+                        <button class="btn-card edit" onclick="editPass('${pass.id}')" title="Editar invitación">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                            Editar
+                        </button>
+                        <button class="btn-card delete" onclick="deletePass('${pass.id}')" title="Eliminar invitación">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                            Eliminar
+                        </button>
+                    </div>
             </div>
         `;
     }).join('');
@@ -675,16 +752,29 @@ function filterGuests(filter) {
     let visibleCount = 0;
 
     cards.forEach(card => {
+        const status = card.dataset.status;
+        let shouldShow = false;
+
         if (filter === 'all') {
+            shouldShow = true;
+        } else if (filter === 'confirmed') {
+            // Show confirmed, partial, and complete guests (anyone who confirmed)
+            shouldShow = ['confirmed', 'partial', 'complete'].includes(status);
+        } else if (filter === 'inside') {
+            // Show partial and complete guests
+            shouldShow = ['partial', 'complete'].includes(status);
+        } else if (filter === 'pending') {
+            shouldShow = status === 'pending';
+        } else {
+            // Fallback for exact match
+            shouldShow = status === filter;
+        }
+
+        if (shouldShow) {
             card.style.display = '';
             visibleCount++;
         } else {
-            if (card.dataset.status === filter) {
-                card.style.display = '';
-                visibleCount++;
-            } else {
-                card.style.display = 'none';
-            }
+            card.style.display = 'none';
         }
     });
 
@@ -1492,12 +1582,30 @@ function loadLiveMonitor() {
     const activePasses = passes.filter(p => p.guests_entered > 0);
 
     // Sort by most recent update (approximate entry time)
-    activePasses.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+    // Sort by most recent update (approximate entry time)
+    activePasses.sort((a, b) => {
+        // Use entry_logs if available for sorting
+        const getLatestLog = (p) => {
+            if (p.entry_logs && p.entry_logs.length > 0) {
+                return p.entry_logs.reduce((latest, log) => {
+                    const d = new Date(log.entered_at);
+                    return d > latest ? d : latest;
+                }, new Date(0));
+            }
+            return new Date(0);
+        };
+
+        return getLatestLog(b) - getLatestLog(a);
+    });
 
     // Update stats
+    // Update stats
     const totalInside = passes.reduce((sum, p) => sum + p.guests_entered, 0);
-    document.getElementById('live-total-inside').textContent = totalInside;
-    document.getElementById('live-families-inside').textContent = activePasses.length;
+    const totalEl = document.getElementById('live-total-inside');
+    const familiesEl = document.getElementById('live-families-inside');
+
+    if (totalEl) totalEl.textContent = totalInside;
+    if (familiesEl) familiesEl.textContent = activePasses.length;
 
     // Render table
     const tbody = document.getElementById('live-guests-list');
@@ -1511,14 +1619,25 @@ function loadLiveMonitor() {
     tbody.innerHTML = activePasses.map(pass => {
         const tableNum = pass.tables?.table_number || '-';
         const isComplete = pass.guests_entered >= pass.total_guests;
-        const time = new Date(pass.updated_at).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+
+        // Find latest entry time from logs
+        let lastEntryTime = null;
+        if (pass.entry_logs && pass.entry_logs.length > 0) {
+            // Sort to find newest
+            const sortedLogs = pass.entry_logs.sort((a, b) => new Date(b.entered_at) - new Date(a.entered_at));
+            lastEntryTime = sortedLogs[0].entered_at;
+        }
+
+        const time = lastEntryTime
+            ? new Date(lastEntryTime).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })
+            : '--:--';
 
         return `
             <tr>
                 <td data-label="Familia">${pass.family_name}</td>
-                <td data-label="Mesa">Mesa ${tableNum}</td>
-                <td data-label="Entrada"><strong>${pass.guests_entered}</strong> / ${pass.total_guests}</td>
-                <td data-label="Hora">~ ${time}</td>
+                <td data-label="Mesa"><span>Mesa ${tableNum}</span></td>
+                <td data-label="Entrada"><span><strong>${pass.guests_entered}</strong> / ${pass.total_guests}</span></td>
+                <td data-label="Hora"><span>~ ${time}</span></td>
                 <td data-label="Estatus"><span class="status-badge ${isComplete ? 'complete' : 'partial'}">${isComplete ? 'Completo' : 'Parcial'}</span></td>
             </tr>
         `;
@@ -1544,4 +1663,41 @@ function initRealtime() {
             }
         )
         .subscribe();
+}
+
+// Helper to generate WhatsApp button
+function getWhatsAppButton(pass, type = 'card') {
+    if (!pass.phone) return '';
+
+    const message = `Hola *${pass.family_name}*, nos da mucha alegría invitarlos a nuestra boda.
+
+Para ver los detalles y *confirmar su asistencia*, por favor ingresa a esta página web:
+https://boda-aby-lupita.vercel.app/
+
+Su código de acceso es:
+*${pass.access_code}*
+
+¡Esperamos contar con su presencia!`;
+
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/52${pass.phone.replace(/\D/g, '')}?text=${encodedMessage}`;
+
+    if (type === 'compact') {
+        return `
+            <a href="${whatsappUrl}" target="_blank" class="btn-whatsapp-compact" title="Enviar por WhatsApp">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+            </a>
+        `;
+    } else {
+        return `
+            <a href="${whatsappUrl}" target="_blank" class="btn-whatsapp" title="Enviar invitación">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+                WhatsApp
+            </a>
+        `;
+    }
 }

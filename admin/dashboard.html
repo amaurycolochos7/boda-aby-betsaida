@@ -161,6 +161,17 @@
                     <p>Visualiza quiénes ya están dentro del evento</p>
                 </div>
 
+                <div class="stats-grid" style="margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <div class="stat-value" id="live-total-inside">0</div>
+                        <div class="stat-label">Personas Dentro</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="live-families-inside">0</div>
+                        <div class="stat-label">Familias Dentro</div>
+                    </div>
+                </div>
+
                 <div class="table-container">
                     <table class="guests-table">
                         <thead>
@@ -243,6 +254,10 @@
                             </div>
                         </div>
                         <div class="form-row">
+                            <div class="config-item">
+                                <label for="family-phone">Teléfono (WhatsApp)</label>
+                                <input type="tel" id="family-phone" placeholder="Ej: 9611234567" pattern="[0-9]*">
+                            </div>
                             <div class="config-item">
                                 <label for="table-select">Mesa Asignada *</label>
                                 <select id="table-select" required>

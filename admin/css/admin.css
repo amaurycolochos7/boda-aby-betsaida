@@ -448,6 +448,49 @@ body {
     margin-top: 0.5rem;
 }
 
+/* WhatsApp Button Styles */
+.btn-whatsapp {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: #25D366;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.2s;
+    margin-right: 0.5rem;
+}
+
+.btn-whatsapp:hover {
+    background-color: #128C7E;
+}
+
+.btn-whatsapp-compact {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background-color: rgba(37, 211, 102, 0.1);
+    color: #25D366;
+    border: 1px solid rgba(37, 211, 102, 0.2);
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    margin-left: 0.5rem;
+}
+
+.btn-whatsapp-compact:hover {
+    background-color: #25D366;
+    color: white;
+}
+
 .copy-btn {
     background: transparent;
     border: 1px solid var(--primary);
@@ -780,54 +823,72 @@ body {
         font-weight: 500;
         color: var(--text-muted);
         text-align: left;
-        margin-right: 1rem;
+        font-size: 0.9rem;
     }
 
-    /* Column Specific Styling for Card Look */
-    /* Code */
-    .guests-table td:nth-child(1) {
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        order: -1;
-    }
+    /* Column Specific Styling for Card Look - Live Monitor */
 
-    /* Family Name - Make it big and headline */
-    .guests-table td:nth-child(2) {
+    /* Family Name - Big Header */
+    .guests-table td[data-label="Familia"] {
         font-family: var(--font-display);
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         color: var(--primary);
-        font-weight: bold;
+        font-weight: 600;
         text-align: left;
         display: block;
-        margin-bottom: 0.5rem;
+        width: 100%;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.75rem;
         border-bottom: 1px solid var(--border);
-        padding-bottom: 0.5rem;
     }
 
-    /* Restore previously hidden columns */
-    .guests-table td:nth-child(2),
-    .guests-table td:nth-child(6),
-    .guests-table td:nth-child(7) {
+    .guests-table td[data-label="Familia"]::before {
+        display: none;
+    }
+
+    /* Grid for details - Improved */
+    .guests-table td[data-label="Mesa"],
+    .guests-table td[data-label="Entrada"],
+    .guests-table td[data-label="Hora"] {
+        display: grid;
+        grid-template-columns: 80px 1fr;
+        /* Fixed width label, dynamic content */
+        align-items: center;
+        text-align: right;
+        padding: 0.5rem 0;
+        border: none;
+        white-space: nowrap;
+        /* Prevent breaking */
+    }
+
+    .guests-table td[data-label="Mesa"] {
+        color: var(--primary);
+        font-weight: 500;
+    }
+
+    .guests-table td[data-label="Entrada"] {
+        /* Ensure the content stays on the right */
+        justify-items: end;
+    }
+
+    .guests-table td[data-label="Entrada"] strong {
+        font-size: 1.1rem;
+        color: var(--text);
+        display: inline-block;
+    }
+
+    /* Status Badge - Bottom right or full width */
+    .guests-table td[data-label="Estatus"] {
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        border-top: 1px dashed var(--border);
         display: flex;
-        /* Restore visibility */
+        justify-content: space-between;
+        align-items: center;
     }
 
-    /* Status Badge Position */
-    .guests-table td:nth-child(6) {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-        width: auto;
-        padding: 0;
-    }
-
-    /* Actions */
-    .guests-table td:last-child {
-        margin-top: 1rem;
-        padding-top: 1rem;
-        border-top: 1px solid var(--border);
-        justify-content: flex-end;
-        gap: 1rem;
+    .guests-table td[data-label="Estatus"]::before {
+        content: "Estado";
     }
 
     /* content-header fix */
