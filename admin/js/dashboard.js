@@ -1164,16 +1164,23 @@ style.textContent = `
         display: flex;
         gap: 0.5rem;
         justify-content: center;
+        align-items: center;
+        white-space: nowrap;
     }
     
     .btn-icon {
         background: transparent;
         border: 1px solid var(--border);
         border-radius: 8px;
-        padding: 0.5rem;
+        padding: 0.4rem 0.6rem;
         cursor: pointer;
         transition: all 0.3s ease;
-        font-size: 1rem;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 32px;
+        height: 32px;
     }
     
     .btn-icon.edit:hover {
