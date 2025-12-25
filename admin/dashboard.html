@@ -95,7 +95,10 @@
             <!-- Overview Section -->
             <section id="section-overview" class="dashboard-section active">
                 <div class="content-header">
-                    <h1>Resumen del Evento</h1>
+                    <div class="header-left">
+                        <h1>Resumen del Evento</h1>
+                        <span id="user-greeting" class="user-greeting">Hola</span>
+                    </div>
                     <span id="current-date"></span>
                 </div>
 
@@ -268,11 +271,21 @@
                 </div>
 
                 <div class="config-section">
-                    <div class="filter-tabs">
-                        <button class="filter-btn active" data-filter="all">Todos</button>
-                        <button class="filter-btn" data-filter="pending">Pendientes</button>
-                        <button class="filter-btn" data-filter="confirmed">Confirmados</button>
-                        <button class="filter-btn" data-filter="inside">Dentro</button>
+                    <div class="filters-row">
+                        <div class="filter-tabs">
+                            <button class="filter-btn active" data-filter="all">Todos</button>
+                            <button class="filter-btn" data-filter="pending">Pendientes</button>
+                            <button class="filter-btn" data-filter="confirmed">Confirmados</button>
+                            <button class="filter-btn" data-filter="inside">Dentro</button>
+                        </div>
+                        <div class="creator-filter">
+                            <label>Creado por:</label>
+                            <select id="creator-filter" onchange="filterByCreator(this.value)">
+                                <option value="all">Todos</option>
+                                <option value="groom">Abidan</option>
+                                <option value="bride">Betsaida</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="guests-table-container">
@@ -285,6 +298,7 @@
                                     <th>Dentro</th>
                                     <th>Mesa</th>
                                     <th>Estado</th>
+                                    <th>Creado por</th>
                                     <th>Confirmado</th>
                                     <th>Acciones</th>
                                 </tr>

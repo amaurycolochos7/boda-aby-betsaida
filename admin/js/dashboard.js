@@ -6,9 +6,11 @@ function getSupabase() {
 
 // State
 let currentUser = null;
+let userProfile = null;
 let eventConfig = null;
 let tables = [];
 let passes = [];
+let userProfiles = {}; // Cache of user profiles
 let isInitialized = false;
 
 // Initialize Dashboard
@@ -19,10 +21,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const hasAuth = await checkDashboardAuth();
     if (!hasAuth) return;
 
+    await loadUserProfile();
     initNavigation();
     await loadDashboardData();
     initForms();
     updateCurrentDate();
+    updateUserGreeting();
 });
 
 // Check authentication for dashboard
@@ -42,6 +46,28 @@ async function checkDashboardAuth() {
 
     currentUser = session.user;
     return true;
+}
+
+// Load user profile
+async function loadUserProfile() {
+    const supabase = getSupabase();
+    const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('id', currentUser.id)
+        .single();
+
+    if (profile) {
+        userProfile = profile;
+    }
+}
+
+// Update greeting with user name
+function updateUserGreeting() {
+    const greetingEl = document.getElementById('user-greeting');
+    if (greetingEl && userProfile) {
+        greetingEl.textContent = `Hola, ${userProfile.first_name}`;
+    }
 }
 
 // Navigation
@@ -173,7 +199,8 @@ async function loadPasses() {
         .from('guest_passes')
         .select(`
             *,
-            tables (table_number)
+            tables (table_number),
+            creator:user_profiles!guest_passes_created_by_fkey (first_name, role)
         `)
         .order('created_at', { ascending: false });
 
@@ -450,15 +477,18 @@ function loadGuests() {
         const confirmedDate = pass.confirmed_at
             ? new Date(pass.confirmed_at).toLocaleDateString('es-MX')
             : '-';
+        const creatorName = pass.creator?.first_name || 'Desconocido';
+        const creatorRole = pass.creator?.role || 'unknown';
 
         return `
-            <tr data-status="${status.class}" data-family="${pass.family_name.toLowerCase()}" data-id="${pass.id}">
+            <tr data-status="${status.class}" data-family="${pass.family_name.toLowerCase()}" data-id="${pass.id}" data-creator-role="${creatorRole}">
                 <td><code>${pass.access_code}</code></td>
                 <td>${pass.family_name}</td>
                 <td>${pass.total_guests}</td>
                 <td>${pass.guests_entered} / ${pass.total_guests}</td>
                 <td>Mesa ${tableNum}</td>
                 <td><span class="status-badge ${status.class}">${status.text}</span></td>
+                <td><span class="creator-badge ${creatorRole}">${creatorName}</span></td>
                 <td>${confirmedDate}</td>
                 <td class="actions-cell">
                     <button class="btn-icon edit" onclick="editPass('${pass.id}')" title="Editar">
@@ -487,7 +517,7 @@ function getPassStatus(pass) {
     return { class: 'pending', text: 'Pendiente' };
 }
 
-// Filter guests
+// Filter guests by status
 function filterGuests(filter) {
     const rows = document.querySelectorAll('#guests-list tr');
 
@@ -496,6 +526,19 @@ function filterGuests(filter) {
             row.style.display = '';
         } else {
             row.style.display = row.dataset.status === filter ? '' : 'none';
+        }
+    });
+}
+
+// Filter guests by creator
+function filterByCreator(creatorRole) {
+    const rows = document.querySelectorAll('#guests-list tr');
+
+    rows.forEach(row => {
+        if (creatorRole === 'all') {
+            row.style.display = '';
+        } else {
+            row.style.display = row.dataset.creatorRole === creatorRole ? '' : 'none';
         }
     });
 }
@@ -1150,6 +1193,78 @@ style.textContent = `
         justify-content: flex-end;
         margin-top: 1rem;
     }
+    
+    /* User greeting */
+    .user-greeting {
+        color: var(--primary);
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+    
+    .header-left {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    /* Creator badges */
+    .creator-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    
+    .creator-badge.groom {
+        background: rgba(52, 152, 219, 0.2);
+        color: #3498db;
+    }
+    
+    .creator-badge.bride {
+        background: rgba(155, 89, 182, 0.2);
+        color: #9b59b6;
+    }
+    
+    .creator-badge.unknown {
+        background: var(--surface-light);
+        color: var(--text-muted);
+    }
+    
+    /* Filters row */
+    .filters-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .creator-filter {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .creator-filter label {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+    
+    .creator-filter select {
+        background: var(--surface-light);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        color: var(--text);
+        font-family: var(--font-body);
+        cursor: pointer;
+    }
+    
+    .creator-filter select:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
 `;
 document.head.appendChild(style);
-
