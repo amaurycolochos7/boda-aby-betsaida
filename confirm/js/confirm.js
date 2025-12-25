@@ -1,5 +1,8 @@
 // Confirm Page Module
-const supabase = window.supabaseClient;
+// Get Supabase client from window
+function getSupabase() {
+    return window.supabaseClient;
+}
 
 // State
 let currentPass = null;
@@ -88,6 +91,7 @@ function getCode() {
 // Handle code submission
 async function handleCodeSubmit(e) {
     e.preventDefault();
+    const supabase = getSupabase();
 
     const code = getCode();
     const errorEl = document.getElementById('error-message');
