@@ -1,15 +1,24 @@
 // Dashboard Module
-const supabase = window.supabaseClient;
+// Get Supabase client from window
+function getSupabase() {
+    return window.supabaseClient;
+}
 
 // State
 let currentUser = null;
 let eventConfig = null;
 let tables = [];
 let passes = [];
+let isInitialized = false;
 
 // Initialize Dashboard
 document.addEventListener('DOMContentLoaded', async () => {
-    await checkDashboardAuth();
+    if (isInitialized) return;
+    isInitialized = true;
+
+    const hasAuth = await checkDashboardAuth();
+    if (!hasAuth) return;
+
     initNavigation();
     await loadDashboardData();
     initForms();
@@ -18,14 +27,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // Check authentication for dashboard
 async function checkDashboardAuth() {
+    const supabase = getSupabase();
+    if (!supabase) {
+        console.error('Supabase not initialized');
+        return false;
+    }
+
     const { data: { session } } = await supabase.auth.getSession();
 
     if (!session) {
         window.location.href = 'index.html';
-        return;
+        return false;
     }
 
     currentUser = session.user;
+    return true;
 }
 
 // Navigation
@@ -90,6 +106,7 @@ async function loadDashboardData() {
 
 // Load event configuration
 async function loadEventConfig() {
+    const supabase = getSupabase();
     const { data, error } = await supabase
         .from('event_config')
         .select('*')
@@ -102,7 +119,7 @@ async function loadEventConfig() {
         document.getElementById('seats-per-table').value = data.seats_per_table;
     } else {
         // Create default config
-        const { data: newConfig } = await supabase
+        const { data: newConfig } = await getSupabase()
             .from('event_config')
             .insert({ total_tables: 10, seats_per_table: 8 })
             .select()
@@ -114,6 +131,7 @@ async function loadEventConfig() {
 
 // Load tables
 async function loadTables() {
+    const supabase = getSupabase();
     const { data, error } = await supabase
         .from('tables')
         .select('*')
@@ -128,6 +146,7 @@ async function loadTables() {
 
 // Load passes
 async function loadPasses() {
+    const supabase = getSupabase();
     const { data, error } = await supabase
         .from('guest_passes')
         .select(`
@@ -224,6 +243,7 @@ function initForms() {
 // Handle tables configuration
 async function handleTablesConfig(e) {
     e.preventDefault();
+    const supabase = getSupabase();
 
     const totalTables = parseInt(document.getElementById('total-tables').value);
     const seatsPerTable = parseInt(document.getElementById('seats-per-table').value);
@@ -286,6 +306,7 @@ function generateCode() {
 // Handle create pass
 async function handleCreatePass(e) {
     e.preventDefault();
+    const supabase = getSupabase();
 
     const familyName = document.getElementById('family-name').value.trim();
     const guestCount = parseInt(document.getElementById('guest-count').value);
@@ -469,6 +490,7 @@ function copyPassCode(code) {
 // Delete pass
 async function deletePass(passId) {
     if (!confirm('¿Estás seguro de eliminar este pase?')) return;
+    const supabase = getSupabase();
 
     try {
         const pass = passes.find(p => p.id === passId);
