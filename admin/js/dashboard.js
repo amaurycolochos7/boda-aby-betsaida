@@ -671,38 +671,92 @@ function getPassStatus(pass) {
 
 // Filter guests by status
 function filterGuests(filter) {
-    const rows = document.querySelectorAll('#guests-list tr');
+    const cards = document.querySelectorAll('.guest-card');
+    let visibleCount = 0;
 
-    rows.forEach(row => {
+    cards.forEach(card => {
         if (filter === 'all') {
-            row.style.display = '';
+            card.style.display = '';
+            visibleCount++;
         } else {
-            row.style.display = row.dataset.status === filter ? '' : 'none';
+            if (card.dataset.status === filter) {
+                card.style.display = '';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
         }
     });
+
+    showEmptyState(visibleCount);
 }
 
 // Filter guests by creator
 function filterByCreator(creatorRole) {
-    const rows = document.querySelectorAll('#guests-list tr');
+    const cards = document.querySelectorAll('.guest-card');
+    let visibleCount = 0;
 
-    rows.forEach(row => {
+    cards.forEach(card => {
         if (creatorRole === 'all') {
-            row.style.display = '';
+            card.style.display = '';
+            visibleCount++;
         } else {
-            row.style.display = row.dataset.creatorRole === creatorRole ? '' : 'none';
+            if (card.dataset.creatorRole === creatorRole) {
+                card.style.display = '';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
         }
     });
+
+    showEmptyState(visibleCount);
 }
 
 // Search guests
 function searchGuests(query) {
-    const rows = document.querySelectorAll('#guests-list tr');
+    const cards = document.querySelectorAll('.guest-card');
     const q = query.toLowerCase();
+    let visibleCount = 0;
 
-    rows.forEach(row => {
-        row.style.display = row.dataset.family.includes(q) ? '' : 'none';
+    cards.forEach(card => {
+        if (card.dataset.family.includes(q)) {
+            card.style.display = '';
+            visibleCount++;
+        } else {
+            card.style.display = 'none';
+        }
     });
+
+    showEmptyState(visibleCount);
+}
+
+// Show/hide empty state message
+function showEmptyState(visibleCount) {
+    const container = document.getElementById('guests-list');
+    let emptyState = container.querySelector('.filter-empty-state');
+
+    if (visibleCount === 0) {
+        // No results - show empty state
+        if (!emptyState) {
+            emptyState = document.createElement('div');
+            emptyState.className = 'filter-empty-state';
+            emptyState.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">-</div>
+                    <h3>No se encontraron invitados</h3>
+                    <p>Intenta cambiar los filtros o realiza otra búsqueda</p>
+                </div>
+            `;
+            container.appendChild(emptyState);
+        }
+        emptyState.style.display = 'block';
+    } else {
+        // Has results - hide empty state
+        if (emptyState) {
+            emptyState.style.display = 'none';
+        }
+    }
 }
 
 // Copy pass code

@@ -46,6 +46,15 @@
         if (!enterBtn || !entryScreen || !mainContent) return;
 
         enterBtn.addEventListener('click', () => {
+            // Start background music
+            const music = document.getElementById('background-music');
+            if (music) {
+                music.volume = 0.5; // Set volume to 50%
+                music.play().catch(error => {
+                    console.log('Autoplay was prevented:', error);
+                });
+            }
+
             // Fade out entry screen
             entryScreen.classList.add('fade-out');
 
