@@ -183,20 +183,20 @@ async function showConfirmation(pass) {
 
 // Generate QR Code
 async function generateQRCode(code) {
-    const canvas = document.getElementById('qr-canvas');
+    const qrContainer = document.getElementById('qr-canvas');
 
-    // QR data: could be just the code or a URL
-    const qrData = code;
+    // Clear previous QR if exists
+    qrContainer.innerHTML = '';
 
     try {
-        await QRCode.toCanvas(canvas, qrData, {
+        // qrcodejs uses a different API - creates QR in a div/canvas element
+        new QRCode(qrContainer, {
+            text: code,
             width: 180,
-            margin: 1,
-            color: {
-                dark: '#000000',
-                light: '#ffffff'
-            },
-            errorCorrectionLevel: 'H'
+            height: 180,
+            colorDark: '#000000',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.H
         });
     } catch (error) {
         console.error('Error generating QR:', error);
