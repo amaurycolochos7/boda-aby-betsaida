@@ -149,6 +149,7 @@ INSERT INTO user_profiles (id, email, first_name, role)
 VALUES ('40cb3f00-02af-481c-89ac-6a4127b69100', 'betsi@miboda.com', 'Betsaida', 'bride')
 ON CONFLICT (id) DO UPDATE SET role = 'bride', first_name = 'Betsaida';
 
--- For access control (run later if needed):
--- INSERT INTO user_profiles (id, email, first_name, role)
--- VALUES ('USER_UUID_HERE', 'acceso@boda.com', 'Control', 'access_control');
+-- For access control (Recepción):
+INSERT INTO user_profiles (id, email, first_name, role)
+VALUES ('e1049ca1-3d66-4cf5-ab4e-08d5362c76c1', 'recepcion@miboda.com', 'Recepción', 'access_control')
+ON CONFLICT (id) DO UPDATE SET role = 'access_control', first_name = 'Recepción';

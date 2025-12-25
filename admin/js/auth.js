@@ -86,12 +86,14 @@ async function handleLogin(e) {
             });
         }
 
+        // Redirect based on role
         if (profile && profile.role === 'access_control') {
-            await supabase.auth.signOut();
-            throw new Error('Acceso denegado. Use el portal de control de acceso.');
+            // Redirect to access control portal
+            window.location.href = '../access-control/scanner.html';
+        } else {
+            // Redirect to dashboard for groom/bride
+            window.location.href = 'dashboard.html';
         }
-
-        window.location.href = 'dashboard.html';
 
     } catch (error) {
         errorEl.textContent = error.message || 'Error al iniciar sesión';
