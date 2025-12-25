@@ -1,33 +1,42 @@
 // Authentication Module for Admin Portal
 // Use supabaseClient from window (loaded by supabase-config.js)
 
+// Only run auth check on login page, not on dashboard
+const isLoginPage = window.location.pathname.includes('index.html') ||
+    window.location.pathname.endsWith('/admin/') ||
+    window.location.pathname.endsWith('/admin');
+
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
-    const errorMessage = document.getElementById('error-message');
 
-    // Check if already logged in
-    checkAuth();
-
-    if (loginForm) {
+    // Only check auth redirect on login page
+    if (isLoginPage && loginForm) {
+        checkAuth();
         loginForm.addEventListener('submit', handleLogin);
     }
 });
 
 async function checkAuth() {
     const supabase = window.supabaseClient;
-    const { data: { session } } = await supabase.auth.getSession();
+    if (!supabase) return;
 
-    if (session) {
-        // Check if user is a groom or bride
-        const { data: profile } = await supabase
-            .from('user_profiles')
-            .select('role')
-            .eq('id', session.user.id)
-            .single();
+    try {
+        const { data: { session } } = await supabase.auth.getSession();
 
-        if (profile && (profile.role === 'groom' || profile.role === 'bride')) {
-            window.location.href = 'dashboard.html';
+        if (session) {
+            // Check if user is a groom or bride
+            const { data: profile } = await supabase
+                .from('user_profiles')
+                .select('role')
+                .eq('id', session.user.id)
+                .single();
+
+            if (profile && (profile.role === 'groom' || profile.role === 'bride')) {
+                window.location.href = 'dashboard.html';
+            }
         }
+    } catch (error) {
+        console.error('Auth check error:', error);
     }
 }
 
