@@ -108,7 +108,7 @@ function updatePendingList() {
     }).join('');
 }
 
-// Render entry log
+// Render entry log - consolidated by family
 function renderEntryLog() {
     const container = document.getElementById('entry-log');
 
@@ -117,17 +117,43 @@ function renderEntryLog() {
         return;
     }
 
-    container.innerHTML = entryLogs.map(log => {
-        const time = new Date(log.entered_at).toLocaleTimeString('es-MX', {
+    // Group entries by family and show latest status
+    const familyStatus = new Map();
+
+    entryLogs.forEach(log => {
+        const familyName = log.guest_passes?.family_name || 'Desconocido';
+        const passId = log.guest_pass_id;
+
+        if (!familyStatus.has(passId)) {
+            // Find the pass to get total info
+            const pass = passes.find(p => p.id === passId);
+            familyStatus.set(passId, {
+                familyName,
+                totalGuests: pass?.total_guests || 0,
+                guestsEntered: pass?.guests_entered || log.guests_entering,
+                lastEntry: log.entered_at,
+                isComplete: pass ? pass.guests_entered >= pass.total_guests : false
+            });
+        }
+    });
+
+    container.innerHTML = Array.from(familyStatus.values()).map(family => {
+        const time = new Date(family.lastEntry).toLocaleTimeString('es-MX', {
             hour: '2-digit',
             minute: '2-digit'
         });
 
+        const statusText = family.isComplete
+            ? `Completa (${family.totalGuests}/${family.totalGuests})`
+            : `${family.guestsEntered}/${family.totalGuests} - Faltan ${family.totalGuests - family.guestsEntered}`;
+
+        const statusClass = family.isComplete ? 'complete' : 'partial';
+
         return `
-            <div class="log-item">
+            <div class="log-item ${statusClass}">
                 <div class="info">
-                    <span class="family">${log.guest_passes?.family_name || 'Desconocido'}</span>
-                    <span class="details">${log.guests_entering} persona(s) entraron</span>
+                    <span class="family">${family.familyName}</span>
+                    <span class="details">${statusText}</span>
                 </div>
                 <span class="time">${time}</span>
             </div>
@@ -143,7 +169,7 @@ function initScanner() {
 
     const config = {
         fps: 10,
-        qrbox: { width: 250, height: 250 },
+        qrbox: { width: 180, height: 180 },
         aspectRatio: 1.0
     };
 
