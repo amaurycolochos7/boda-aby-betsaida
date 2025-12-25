@@ -1,5 +1,5 @@
 // Authentication Module for Admin Portal
-const supabase = window.supabaseClient;
+// Use supabaseClient from window (loaded by supabase-config.js)
 
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function checkAuth() {
+    const supabase = window.supabaseClient;
     const { data: { session } } = await supabase.auth.getSession();
 
     if (session) {
@@ -33,6 +34,7 @@ async function checkAuth() {
 async function handleLogin(e) {
     e.preventDefault();
 
+    const supabase = window.supabaseClient;
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     const errorEl = document.getElementById('error-message');
@@ -84,6 +86,7 @@ async function handleLogin(e) {
 
 // Logout function
 async function logout() {
+    const supabase = window.supabaseClient;
     await supabase.auth.signOut();
     window.location.href = 'index.html';
 }
