@@ -87,6 +87,28 @@ function initNavigation() {
     }
 }
 
+// Navigate to section (for clickable stat cards)
+function navigateToSection(section) {
+    const navLinks = document.querySelectorAll('.sidebar-nav a');
+
+    // Update active states
+    navLinks.forEach(l => l.classList.remove('active'));
+    const targetLink = document.querySelector(`[data-section="${section}"]`);
+    if (targetLink) {
+        targetLink.classList.add('active');
+    }
+
+    // Show section
+    document.querySelectorAll('.dashboard-section').forEach(s => {
+        s.classList.remove('active');
+    });
+    document.getElementById(`section-${section}`).classList.add('active');
+
+    // Refresh data for specific sections
+    if (section === 'guests') loadGuests();
+    if (section === 'passes') loadRecentPasses();
+}
+
 // Update current date display
 function updateCurrentDate() {
     const dateEl = document.getElementById('current-date');
@@ -604,6 +626,17 @@ style.textContent = `
     }
     .dashboard-section.active {
         display: block;
+    }
+    
+    .stat-card.clickable {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card.clickable:hover {
+        border-color: var(--primary);
+        transform: translateY(-3px);
+        box-shadow: 0 5px 20px rgba(184, 134, 11, 0.3);
     }
     
     .tables-visual-grid {
