@@ -120,8 +120,11 @@ async function handleCodeSubmit(e) {
 
         currentPass = pass;
 
+        // Check if already confirmed
+        const alreadyConfirmed = pass.confirmed;
+
         // Mark as confirmed if not already
-        if (!pass.confirmed) {
+        if (!alreadyConfirmed) {
             await supabase
                 .from('guest_passes')
                 .update({
@@ -138,8 +141,8 @@ async function handleCodeSubmit(e) {
                 guest_pass_id: pass.id
             });
 
-        // Show confirmation step
-        showConfirmation(pass);
+        // Show confirmation step with already confirmed flag
+        showConfirmation(pass, alreadyConfirmed);
 
     } catch (error) {
         showError(error.message);
@@ -156,8 +159,22 @@ function showError(message) {
 }
 
 // Show confirmation step
-async function showConfirmation(pass) {
+async function showConfirmation(pass, alreadyConfirmed = false) {
     const tableNum = pass.tables?.table_number || '-';
+
+    // Update header based on confirmation status
+    const successIcon = document.querySelector('.success-icon');
+    const headerTitle = document.querySelector('#step-confirm h1');
+
+    if (alreadyConfirmed) {
+        // Already confirmed before - show different message
+        if (successIcon) successIcon.textContent = '✓';
+        if (headerTitle) headerTitle.innerHTML = '¡Ya confirmaste!<br><small style="font-size: 0.5em; color: var(--text-muted);">Tu código QR sigue siendo válido</small>';
+    } else {
+        // First time confirmation
+        if (successIcon) successIcon.textContent = '🎉';
+        if (headerTitle) headerTitle.textContent = '¡Confirmado!';
+    }
 
     // Update display
     document.getElementById('display-family').textContent = pass.family_name;
