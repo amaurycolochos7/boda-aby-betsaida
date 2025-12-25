@@ -649,6 +649,13 @@ body {
         box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
     }
 
+    .sidebar-header h2,
+    .sidebar-nav span,
+    .sidebar-footer p {
+        display: block;
+        /* Restaurar texto en mobile */
+    }
+
     .sidebar.open {
         left: 0;
     }
@@ -720,11 +727,28 @@ body {
         border-collapse: collapse;
     }
 
+    .guests-table .actions-cell {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    /* Ocultar columnas menos importantes en mobile */
+    .guests-table th:nth-child(2),
+    /* Mesa - a veces importa, pero ocupa espacio */
+    .guests-table td:nth-child(2),
+    .guests-table th:nth-child(6),
+    /* Creado Por */
+    .guests-table td:nth-child(6),
+    .guests-table th:nth-child(7),
+    /* Confirmado Fecha */
+    .guests-table td:nth-child(7) {
+        display: none;
+    }
+
     .guests-table th,
     .guests-table td {
-        padding: 0.75rem 0.5rem;
-        text-align: left;
-        white-space: nowrap;
+        padding: 0.5rem 0.25rem;
+        font-size: 0.8rem;
     }
 
     /* Filters responsive */
