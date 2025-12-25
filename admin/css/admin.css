@@ -694,18 +694,28 @@ body {
     }
 
     /* Guests table responsive */
-    .guests-table-container {
+    .guests-table-container,
+    .table-container {
         overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-top: 1rem;
+        background: var(--surface);
+        border-radius: 10px;
+        border: 1px solid var(--border);
     }
 
     .guests-table {
-        min-width: 700px;
+        min-width: 600px;
         font-size: 0.85rem;
+        width: 100%;
+        border-collapse: collapse;
     }
 
     .guests-table th,
     .guests-table td {
-        padding: 0.5rem;
+        padding: 0.75rem 0.5rem;
+        text-align: left;
+        white-space: nowrap;
     }
 
     /* Filters responsive */
