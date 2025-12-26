@@ -1672,7 +1672,7 @@ function getWhatsAppButton(pass, type = 'card') {
     const message = `Hola *${pass.family_name}*, nos da mucha alegría invitarlos a nuestra boda.
 
 Para ver los detalles y *confirmar su asistencia*, por favor ingresa a esta página web:
-https://boda-aby-lupita.vercel.app/
+https://boda-abi-lupita.vercel.app/
 
 Su código de acceso es:
 *${pass.access_code}*

@@ -61,42 +61,75 @@ async function handleLogin(e) {
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<span>Ingresando...</span>';
 
+    console.log('🔐 Intentando login con:', email);
+
     try {
+        // Step 1: Authenticate with Supabase
         const { data, error } = await supabase.auth.signInWithPassword({
             email,
             password
         });
 
-        if (error) throw error;
+        if (error) {
+            console.error('❌ Error de autenticación:', error);
+            throw error;
+        }
 
-        // Check user role
+        console.log('✅ Autenticación exitosa. User ID:', data.user.id);
+
+        // Step 2: Check user role
+        console.log('🔍 Buscando perfil de usuario...');
         const { data: profile, error: profileError } = await supabase
             .from('user_profiles')
-            .select('role')
+            .select('role, first_name, email')
             .eq('id', data.user.id)
             .single();
 
         if (profileError) {
+            console.error('⚠️ Error al obtener perfil:', profileError);
+            console.log('🔧 Creando perfil automáticamente...');
+
             // Create profile if doesn't exist
-            await supabase.from('user_profiles').insert({
+            const { error: insertError } = await supabase.from('user_profiles').insert({
                 id: data.user.id,
                 email: data.user.email,
                 first_name: 'Novio/a',
                 role: 'groom'
             });
+
+            if (insertError) {
+                console.error('❌ Error al crear perfil:', insertError);
+                throw new Error('No se pudo crear el perfil de usuario. Verifica las políticas RLS.');
+            }
+
+            console.log('✅ Perfil creado exitosamente');
+        } else {
+            console.log('✅ Perfil encontrado:', profile);
         }
 
-        // Redirect based on role
-        if (profile && profile.role === 'access_control') {
-            // Redirect to access control portal
+        // Step 3: Redirect based on role
+        const userRole = profile ? profile.role : 'groom';
+        console.log('🎯 Rol del usuario:', userRole);
+
+        if (userRole === 'access_control') {
+            console.log('🚀 Redirigiendo a control de acceso...');
             window.location.href = '../access-control/scanner.html';
         } else {
-            // Redirect to dashboard for groom/bride
+            console.log('🚀 Redirigiendo a dashboard...');
             window.location.href = 'dashboard.html';
         }
 
     } catch (error) {
-        errorEl.textContent = error.message || 'Error al iniciar sesión';
+        // Provide helpful error messages
+        let errorMessage = 'Error al iniciar sesión';
+
+        if (error.message && error.message.includes('Invalid login credentials')) {
+            errorMessage = 'Credenciales inválidas. Verifica tu correo y contraseña, o crea tu cuenta en Supabase Dashboard > Authentication.';
+        } else if (error.message) {
+            errorMessage = error.message;
+        }
+
+        errorEl.textContent = errorMessage;
         errorEl.classList.remove('hidden');
         submitBtn.disabled = false;
         submitBtn.innerHTML = '<span>Ingresar</span>';
