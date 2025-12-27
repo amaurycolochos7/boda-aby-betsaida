@@ -53,6 +53,14 @@
                 music.play().catch(error => {
                     console.log('Autoplay was prevented:', error);
                 });
+
+                // Save music time to localStorage every 500ms so it can continue on confirm page
+                setInterval(() => {
+                    if (!music.paused) {
+                        localStorage.setItem('musicTime', music.currentTime);
+                        localStorage.setItem('musicPlaying', 'true');
+                    }
+                }, 500);
             }
 
             // Fade out entry screen

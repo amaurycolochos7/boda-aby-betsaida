@@ -9,6 +9,7 @@ let currentPass = null;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
+    initBackgroundMusic();
     initCodeInputs();
     initForm();
 
@@ -19,6 +20,53 @@ document.addEventListener('DOMContentLoaded', () => {
         fillCodeFromUrl(codeFromUrl.toUpperCase());
     }
 });
+
+// Initialize background music - continues from exactly where it was on main page
+function initBackgroundMusic() {
+    const music = document.getElementById('background-music');
+    if (!music) return;
+
+    music.volume = 0.5;
+
+    // Restore music position from localStorage (saved from main page)
+    const savedTime = parseFloat(localStorage.getItem('musicTime')) || 0;
+    const wasPlaying = localStorage.getItem('musicPlaying') === 'true';
+
+    if (wasPlaying && savedTime > 0) {
+        music.currentTime = savedTime;
+    }
+
+    // Function to start music and keep saving position
+    const startMusicAndSave = () => {
+        // Continue saving music time
+        setInterval(() => {
+            if (!music.paused) {
+                localStorage.setItem('musicTime', music.currentTime);
+                localStorage.setItem('musicPlaying', 'true');
+            }
+        }, 500);
+    };
+
+    // Try to play immediately
+    music.play().then(() => {
+        startMusicAndSave();
+    }).catch(() => {
+        // If autoplay is blocked, play on first user interaction
+        const playOnInteraction = () => {
+            // Get the latest saved time before playing
+            const latestTime = parseFloat(localStorage.getItem('musicTime')) || savedTime;
+            music.currentTime = latestTime;
+            music.play().then(startMusicAndSave).catch(console.log);
+            document.removeEventListener('click', playOnInteraction);
+            document.removeEventListener('touchstart', playOnInteraction);
+            document.removeEventListener('keydown', playOnInteraction);
+        };
+
+        document.addEventListener('click', playOnInteraction);
+        document.addEventListener('touchstart', playOnInteraction);
+        document.addEventListener('keydown', playOnInteraction);
+    });
+}
 
 // Initialize code input behavior
 function initCodeInputs() {
