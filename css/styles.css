@@ -764,6 +764,12 @@ button {
     color: var(--gold);
 }
 
+.hero-names .alt-font {
+    font-family: var(--font-serif);
+    font-style: italic;
+    margin-right: -2px;
+}
+
 .hero-line {
     width: 100px;
     height: 2px;
