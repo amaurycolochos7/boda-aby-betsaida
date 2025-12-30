@@ -32,14 +32,11 @@ function initBackgroundMusic() {
     const savedTime = parseFloat(localStorage.getItem('musicTime')) || 0;
     const wasPlaying = localStorage.getItem('musicPlaying') === 'true';
 
-    if (wasPlaying && savedTime > 0) {
-        music.currentTime = savedTime;
-    }
-
-    // Function to start music and keep saving position
-    const startMusicAndSave = () => {
-        // Continue saving music time
-        setInterval(() => {
+    // Function to start saving music time periodically
+    let savingInterval = null;
+    const startSavingTime = () => {
+        if (savingInterval) return; // Already saving
+        savingInterval = setInterval(() => {
             if (!music.paused) {
                 localStorage.setItem('musicTime', music.currentTime);
                 localStorage.setItem('musicPlaying', 'true');
@@ -47,25 +44,68 @@ function initBackgroundMusic() {
         }, 500);
     };
 
-    // Try to play immediately
-    music.play().then(() => {
-        startMusicAndSave();
-    }).catch(() => {
-        // If autoplay is blocked, play on first user interaction
-        const playOnInteraction = () => {
-            // Get the latest saved time before playing
-            const latestTime = parseFloat(localStorage.getItem('musicTime')) || savedTime;
-            music.currentTime = latestTime;
-            music.play().then(startMusicAndSave).catch(console.log);
-            document.removeEventListener('click', playOnInteraction);
-            document.removeEventListener('touchstart', playOnInteraction);
-            document.removeEventListener('keydown', playOnInteraction);
-        };
+    // Function to restore position and play music
+    const restoreAndPlay = (targetTime) => {
+        return new Promise((resolve) => {
+            if (targetTime > 0) {
+                // Wait for audio to be ready, then set position
+                const setPosition = () => {
+                    music.currentTime = targetTime;
+                    // Wait for seeked event to confirm position was set
+                    const onSeeked = () => {
+                        music.removeEventListener('seeked', onSeeked);
+                        music.play().then(() => {
+                            startSavingTime();
+                            resolve(true);
+                        }).catch((e) => {
+                            console.log('Play after seek failed:', e);
+                            resolve(false);
+                        });
+                    };
+                    music.addEventListener('seeked', onSeeked);
+                };
 
-        document.addEventListener('click', playOnInteraction);
-        document.addEventListener('touchstart', playOnInteraction);
-        document.addEventListener('keydown', playOnInteraction);
-    });
+                // Check if audio is ready
+                if (music.readyState >= 2) { // HAVE_CURRENT_DATA or higher
+                    setPosition();
+                } else {
+                    // Wait for audio to load enough data
+                    music.addEventListener('canplay', () => setPosition(), { once: true });
+                }
+            } else {
+                // No saved position, just play from start
+                music.play().then(() => {
+                    startSavingTime();
+                    resolve(true);
+                }).catch((e) => {
+                    console.log('Play failed:', e);
+                    resolve(false);
+                });
+            }
+        });
+    };
+
+    // Try to play with restored position
+    if (wasPlaying) {
+        const latestTime = parseFloat(localStorage.getItem('musicTime')) || savedTime;
+        restoreAndPlay(latestTime).then((success) => {
+            if (!success) {
+                // If autoplay is blocked, play on first user interaction
+                const playOnInteraction = () => {
+                    // Get the latest saved time before playing
+                    const currentLatestTime = parseFloat(localStorage.getItem('musicTime')) || savedTime;
+                    restoreAndPlay(currentLatestTime);
+                    document.removeEventListener('click', playOnInteraction);
+                    document.removeEventListener('touchstart', playOnInteraction);
+                    document.removeEventListener('keydown', playOnInteraction);
+                };
+
+                document.addEventListener('click', playOnInteraction);
+                document.addEventListener('touchstart', playOnInteraction);
+                document.addEventListener('keydown', playOnInteraction);
+            }
+        });
+    }
 }
 
 // Initialize code input behavior

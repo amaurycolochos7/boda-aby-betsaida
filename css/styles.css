@@ -1166,31 +1166,29 @@ button {
 
 .timeline-time {
     display: inline-block;
-    font-family: var(--font-sans);
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+    font-family: var(--font-script);
+    font-size: 1.5rem;
+    font-weight: 400;
     color: var(--white);
     background: var(--gold);
-    padding: 5px 15px;
+    padding: 5px 20px;
     border-radius: 20px;
     margin-bottom: 12px;
 }
 
 .timeline-title {
-    font-family: var(--font-serif);
-    font-size: 1.3rem;
-    font-weight: 600;
+    font-family: var(--font-script);
+    font-size: 2rem;
+    font-weight: 400;
     color: var(--text-dark);
     margin-bottom: 8px;
+    line-height: 1.2;
 }
 
 .timeline-desc {
-    font-family: var(--font-serif);
-    font-size: 1rem;
+    font-family: var(--font-script);
+    font-size: 1.5rem;
     color: var(--text-medium);
-    font-style: italic;
 }
 
 /* ========== GALLERY SECTION ========== */
