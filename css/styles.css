@@ -716,7 +716,7 @@ button {
     position: relative;
     z-index: 10;
     text-align: center;
-    padding: 60px 30px;
+    padding: 60px 30px 100px;
 }
 
 .ornament-top,
@@ -793,7 +793,7 @@ button {
 /* Scroll Indicator */
 .scroll-indicator {
     position: absolute;
-    bottom: 40px;
+    bottom: 15px;
     left: 50%;
     transform: translateX(-50%);
 }
