@@ -271,7 +271,7 @@
     }
 
     function buildWhatsAppMessage(name, guests, note) {
-        let message = `Hola, soy ${name}. Confirmo mi asistencia a la boda de Abidan y Betsaida el ${config.eventDate} a las ${config.eventTime}. Asistiremos ${guests} persona(s).`;
+        let message = `Hola, soy ${name}. Confirmo mi asistencia a la boda de Abidán y Betsaida el ${config.eventDate} a las ${config.eventTime}. Asistiremos ${guests} persona(s).`;
 
         if (note) {
             message += ` Nota: ${note}`;

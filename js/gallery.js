@@ -22,7 +22,13 @@
             const img = item.querySelector('img');
             if (img) {
                 images.push(img.src);
-                item.addEventListener('click', () => openLightbox(index));
+
+                // Special handling for "See More" button - opens from first image
+                if (item.classList.contains('gallery-more')) {
+                    item.addEventListener('click', () => openLightbox(0));
+                } else {
+                    item.addEventListener('click', () => openLightbox(index));
+                }
             }
         });
     }

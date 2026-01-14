@@ -295,7 +295,7 @@ function updateCreatorFilterCounts() {
             if (option.value === 'all') {
                 option.textContent = `Todos (${totalGuests} invitados)`;
             } else if (option.value === 'groom') {
-                option.textContent = `Abidan (${groomGuests} invitados)`;
+                option.textContent = `Abidán (${groomGuests} invitados)`;
             } else if (option.value === 'bride') {
                 option.textContent = `Betsaida (${brideGuests} invitados)`;
             }
