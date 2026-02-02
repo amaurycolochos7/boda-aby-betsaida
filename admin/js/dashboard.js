@@ -12,6 +12,7 @@ let tables = [];
 let passes = [];
 let userProfiles = {}; // Cache of user profiles
 let isInitialized = false;
+let tableTypes = []; // [{capacity: 10, quantity: 5}, ...]
 
 // Initialize Dashboard
 document.addEventListener('DOMContentLoaded', async () => {
@@ -170,8 +171,6 @@ async function loadEventConfig() {
 
     if (data) {
         eventConfig = data;
-        document.getElementById('total-tables').value = data.total_tables;
-        document.getElementById('seats-per-table').value = data.seats_per_table;
     } else {
         // Create default config
         const { data: newConfig } = await getSupabase()
@@ -192,10 +191,35 @@ async function loadTables() {
         .select('*')
         .order('table_number');
 
+    if (error) {
+        console.error('Error loading tables:', error);
+        return;
+    }
+
     if (data) {
         tables = data;
-        renderTablesGrid();
+        renderTablesList();
         populateTableSelect();
+        updateTablesCount();
+    }
+}
+
+// Update tables count display
+function updateTablesCount() {
+    const countEl = document.getElementById('total-tables-count');
+    const capacityEl = document.getElementById('total-capacity');
+
+    if (countEl) countEl.textContent = tables.length;
+    if (capacityEl) {
+        const total = tables.reduce((sum, t) => sum + t.capacity, 0);
+        capacityEl.textContent = total;
+    }
+
+    // Show/hide bulk delete button
+    const bulkActions = document.getElementById('tables-bulk-actions');
+    if (bulkActions) {
+        const hasEmptyTables = tables.some(t => t.occupied_seats === 0);
+        bulkActions.style.display = hasEmptyTables ? 'block' : 'none';
     }
 }
 
@@ -357,18 +381,19 @@ function populateTableSelect() {
     const guestInput = document.getElementById('guest-count');
     if (!select) return;
 
-    const requiredSeats = guestInput ? parseInt(guestInput.value) || 0 : 0;
+    const requiredSeats = guestInput ? parseInt(guestInput.value) || 1 : 1;
     const currentSelection = select.value;
 
     select.innerHTML = '<option value="">Selecciona una mesa</option>' +
         tables.map(table => {
             const available = table.capacity - table.occupied_seats;
-            // Disable if fully occupied OR if not enough space for required seats
-            const isEnoughSpace = requiredSeats > 0 ? available >= requiredSeats : available > 0;
+            // Show all tables, but disable if not enough space
+            const isEnoughSpace = available >= requiredSeats;
             const disabled = !isEnoughSpace ? 'disabled' : '';
+            const statusText = available === 0 ? 'llena' : `${available} lugares disponibles`;
 
             return `<option value="${table.id}" ${disabled}>
-                Mesa ${table.table_number} (${available} lugares disponibles)
+                Mesa ${table.table_number} (${statusText})
             </option>`;
         }).join('');
 
@@ -405,57 +430,257 @@ function initForms() {
     }
 }
 
-// Handle tables configuration
-async function handleTablesConfig(e) {
-    e.preventDefault();
+// ==================== SIMPLE TABLE MANAGEMENT ====================
+
+// Render the list of tables with delete buttons
+function renderTablesList() {
+    const container = document.getElementById('tables-list');
+    if (!container) return;
+
+    if (tables.length === 0) {
+        container.innerHTML = `
+            <div class="tables-empty">
+                <p>No hay mesas creadas todavía.</p>
+                <p>Usa el formulario de arriba para agregar mesas.</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = tables.map(table => {
+        const isOccupied = table.occupied_seats > 0;
+        const statusClass = isOccupied ? 'occupied' : 'empty';
+        const guestsAssigned = passes.filter(p => p.table_id === table.id);
+        const totalGuests = guestsAssigned.reduce((sum, p) => sum + p.total_guests, 0);
+
+        return `
+            <div class="table-list-item ${statusClass}" onclick="showTableGuests('${table.id}', ${table.table_number})" style="cursor: pointer;">
+                <div class="table-info">
+                    <span class="table-number">Mesa ${table.table_number}</span>
+                    <span class="table-capacity">${table.capacity} personas</span>
+                    ${isOccupied ? `<span class="table-occupied">${guestsAssigned.length} familia${guestsAssigned.length > 1 ? 's' : ''} (${totalGuests} personas)</span>` : '<span class="table-empty-label">Sin asignar</span>'}
+                </div>
+                <div class="table-actions">
+                    <button type="button" 
+                        class="btn-view-table"
+                        onclick="event.stopPropagation(); showTableGuests('${table.id}', ${table.table_number})"
+                        title="Ver invitados">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                    <button type="button" 
+                        onclick="event.stopPropagation(); deleteSingleTable('${table.id}', ${table.table_number}, ${isOccupied})" 
+                        class="btn-delete-table"
+                        title="${isOccupied ? 'Eliminar mesa (invitados quedarán sin asignar)' : 'Eliminar mesa'}">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Add a single table
+async function addSingleTable() {
+    const capacityInput = document.getElementById('new-table-capacity');
+    const capacity = parseInt(capacityInput.value);
+
+    if (!capacity || capacity < 1) {
+        showToast('Ingresa una capacidad válida (mínimo 1)', 'error');
+        return;
+    }
+
     const supabase = getSupabase();
 
-    const totalTables = parseInt(document.getElementById('total-tables').value);
-    const seatsPerTable = parseInt(document.getElementById('seats-per-table').value);
+    // Get next table number
+    const nextNumber = tables.length > 0
+        ? Math.max(...tables.map(t => t.table_number)) + 1
+        : 1;
 
     try {
-        // Update or create config
-        if (eventConfig?.id) {
-            await supabase
-                .from('event_config')
-                .update({ total_tables: totalTables, seats_per_table: seatsPerTable })
-                .eq('id', eventConfig.id);
-        }
-
-        // Create tables if needed
-        const existingCount = tables.length;
-
-        if (totalTables > existingCount) {
-            // Add new tables
-            const newTables = [];
-            for (let i = existingCount + 1; i <= totalTables; i++) {
-                newTables.push({ table_number: i, capacity: seatsPerTable });
-            }
-            await supabase.from('tables').insert(newTables);
-        } else if (totalTables < existingCount) {
-            // Remove excess tables (only if empty)
-            const tablesToRemove = tables
-                .filter(t => t.table_number > totalTables && t.occupied_seats === 0)
-                .map(t => t.id);
-
-            if (tablesToRemove.length > 0) {
-                await supabase.from('tables').delete().in('id', tablesToRemove);
-            }
-        }
-
-        // Update capacity for all tables
-        await supabase
+        const { error } = await supabase
             .from('tables')
-            .update({ capacity: seatsPerTable })
-            .lte('table_number', totalTables);
+            .insert([{
+                table_number: nextNumber,
+                capacity: capacity,
+                occupied_seats: 0
+            }]);
 
-        showToast('Configuración guardada correctamente', 'success');
+        if (error) throw error;
+
+        showToast(`Mesa ${nextNumber} agregada (${capacity} personas)`, 'success');
         await loadTables();
         updateStats();
-
     } catch (error) {
-        showToast('Error al guardar: ' + error.message, 'error');
+        console.error('Error adding table:', error);
+        showToast('Error al agregar mesa: ' + error.message, 'error');
     }
+}
+
+// Add multiple tables at once
+async function addMultipleTables() {
+    const quantityInput = document.getElementById('quick-add-quantity');
+    const capacityInput = document.getElementById('quick-add-capacity');
+
+    const quantity = parseInt(quantityInput.value);
+    const capacity = parseInt(capacityInput.value);
+
+    if (!quantity || quantity < 1) {
+        showToast('Ingresa una cantidad válida', 'error');
+        return;
+    }
+
+    if (!capacity || capacity < 1) {
+        showToast('Ingresa una capacidad válida', 'error');
+        return;
+    }
+
+    const supabase = getSupabase();
+
+    // Get next table number
+    let nextNumber = tables.length > 0
+        ? Math.max(...tables.map(t => t.table_number)) + 1
+        : 1;
+
+    const newTables = [];
+    for (let i = 0; i < quantity; i++) {
+        newTables.push({
+            table_number: nextNumber++,
+            capacity: capacity,
+            occupied_seats: 0
+        });
+    }
+
+    try {
+        const { error } = await supabase
+            .from('tables')
+            .insert(newTables);
+
+        if (error) throw error;
+
+        showToast(`${quantity} mesa(s) de ${capacity} personas agregadas`, 'success');
+        await loadTables();
+        updateStats();
+    } catch (error) {
+        console.error('Error adding tables:', error);
+        showToast('Error al agregar mesas: ' + error.message, 'error');
+    }
+}
+
+// Custom confirmation modal
+function showConfirmModal(message, onConfirm, onCancel = null) {
+    // Create or get modal
+    let modal = document.getElementById('confirm-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'confirm-modal';
+        modal.className = 'confirm-modal';
+        document.body.appendChild(modal);
+    }
+
+    modal.innerHTML = `
+        <div class="confirm-modal-overlay"></div>
+        <div class="confirm-modal-content">
+            <p class="confirm-message">${message}</p>
+            <div class="confirm-actions">
+                <button type="button" class="btn btn-secondary" id="confirm-cancel">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirm-accept">Eliminar</button>
+            </div>
+        </div>
+    `;
+
+    modal.classList.add('active');
+
+    // Handle buttons
+    document.getElementById('confirm-cancel').onclick = () => {
+        modal.classList.remove('active');
+        if (onCancel) onCancel();
+    };
+
+    document.getElementById('confirm-accept').onclick = () => {
+        modal.classList.remove('active');
+        onConfirm();
+    };
+
+    // Close on overlay click
+    modal.querySelector('.confirm-modal-overlay').onclick = () => {
+        modal.classList.remove('active');
+        if (onCancel) onCancel();
+    };
+}
+
+// Delete a single table
+async function deleteSingleTable(tableId, tableNumber, isOccupied) {
+    const message = isOccupied
+        ? `¿Eliminar Mesa ${tableNumber}? Los invitados asignados quedarán sin mesa.`
+        : `¿Eliminar Mesa ${tableNumber}?`;
+
+    showConfirmModal(message, async () => {
+        const supabase = getSupabase();
+
+        try {
+            // If table has guests, unassign them first
+            if (isOccupied) {
+                const { error: unassignError } = await supabase
+                    .from('guest_passes')
+                    .update({ table_id: null })
+                    .eq('table_id', tableId);
+
+                if (unassignError) throw unassignError;
+            }
+
+            // Delete the table
+            const { error } = await supabase
+                .from('tables')
+                .delete()
+                .eq('id', tableId);
+
+            if (error) throw error;
+
+            showToast(`Mesa ${tableNumber} eliminada`, 'success');
+            await loadTables();
+            await loadPasses();
+            updateStats();
+        } catch (error) {
+            console.error('Error deleting table:', error);
+            showToast('Error al eliminar mesa: ' + error.message, 'error');
+        }
+    });
+}
+
+// Delete all empty tables
+async function deleteAllEmptyTables() {
+    const emptyTables = tables.filter(t => t.occupied_seats === 0);
+
+    if (emptyTables.length === 0) {
+        showToast('No hay mesas vacías para eliminar', 'info');
+        return;
+    }
+
+    showConfirmModal(`¿Eliminar ${emptyTables.length} mesa(s) vacías?`, async () => {
+        const supabase = getSupabase();
+
+        try {
+            const { error } = await supabase
+                .from('tables')
+                .delete()
+                .eq('occupied_seats', 0);
+
+            if (error) throw error;
+
+            showToast(`${emptyTables.length} mesa(s) eliminadas`, 'success');
+            await loadTables();
+            updateStats();
+        } catch (error) {
+            console.error('Error deleting tables:', error);
+            showToast('Error al eliminar mesas: ' + error.message, 'error');
+        }
+    });
 }
 
 // Generate unique 4-character code

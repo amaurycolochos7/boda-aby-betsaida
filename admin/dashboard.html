@@ -193,43 +193,77 @@
             <!-- Tables Section -->
             <section id="section-tables" class="dashboard-section">
                 <div class="content-header">
-                    <h1>Configuración de Mesas</h1>
+                    <h1>Gestión de Mesas</h1>
                 </div>
 
+                <!-- Agregar nueva mesa -->
                 <div class="config-section">
-                    <h2>Parámetros del Evento</h2>
-                    <form id="tables-config-form" class="pass-form">
-                        <div class="form-row">
-                            <div class="config-item">
-                                <label for="total-tables">Número de Mesas</label>
-                                <input type="number" id="total-tables" min="1" max="50" value="10">
-                            </div>
-                            <div class="config-item">
-                                <label for="seats-per-table">Personas por Mesa</label>
-                                <input type="number" id="seats-per-table" min="1" max="20" value="8">
-                            </div>
+                    <h2>Agregar Nueva Mesa</h2>
+                    <div class="add-single-table-form">
+                        <div class="config-item">
+                            <label for="new-table-capacity">Capacidad de la mesa (personas)</label>
+                            <input type="number" id="new-table-capacity" min="1" max="30" value="10"
+                                placeholder="Ej: 10">
                         </div>
-                        <div style="margin-top: 1rem;">
-                            <button type="submit" class="btn btn-primary">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                                    <polyline points="7 3 7 8 15 8"></polyline>
-                                </svg>
-                                Guardar Configuración
+                        <button type="button" onclick="addSingleTable()" class="btn btn-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            Agregar Mesa
+                        </button>
+                    </div>
+
+                    <!-- Agregar múltiples mesas rápido -->
+                    <div class="quick-add-section">
+                        <div class="quick-add-header">
+                            <span class="quick-add-title">Agregar varias mesas</span>
+                        </div>
+                        <div class="quick-add-row">
+                            <div class="quick-add-field">
+                                <label for="quick-add-quantity">Cantidad</label>
+                                <input type="number" id="quick-add-quantity" min="1" max="50" value="5">
+                            </div>
+                            <span class="quick-add-separator">x</span>
+                            <div class="quick-add-field">
+                                <label for="quick-add-capacity">Personas por mesa</label>
+                                <input type="number" id="quick-add-capacity" min="1" max="30" value="10">
+                            </div>
+                            <button type="button" onclick="addMultipleTables()" class="btn btn-secondary">
+                                Agregar
                             </button>
                         </div>
-                    </form>
+                    </div>
                 </div>
 
+                <!-- Lista de mesas existentes -->
                 <div class="config-section">
-                    <h2>Distribución de Mesas</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 1rem;">
-                        Capacidad total: <strong id="total-capacity">0</strong> personas
-                    </p>
-                    <div id="tables-grid" class="tables-visual-grid">
-                        <!-- Tables will be rendered here -->
+                    <div class="tables-header">
+                        <h2>Mesas Creadas</h2>
+                        <div class="tables-summary">
+                            <span>Total: <strong id="total-tables-count">0</strong> mesas</span>
+                            <span class="separator">|</span>
+                            <span>Capacidad: <strong id="total-capacity">0</strong> personas</span>
+                        </div>
+                    </div>
+
+                    <div id="tables-list" class="tables-list">
+                        <!-- Las mesas se cargan aquí dinámicamente -->
+                    </div>
+
+                    <!-- Botón para eliminar todas las mesas vacías -->
+                    <div class="tables-actions" id="tables-bulk-actions" style="display: none;">
+                        <button type="button" onclick="deleteAllEmptyTables()" class="btn btn-danger">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path
+                                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                </path>
+                            </svg>
+                            Eliminar Todas las Mesas Vacías
+                        </button>
                     </div>
                 </div>
             </section>
@@ -256,7 +290,9 @@
                         <div class="form-row">
                             <div class="config-item">
                                 <label for="family-phone">Teléfono (WhatsApp)</label>
-                                <input type="tel" id="family-phone" placeholder="Ej: 9611234567" pattern="[0-9]*">
+                                <input type="tel" id="family-phone" placeholder="Ej: 9611234567" pattern="[0-9]{10}"
+                                    maxlength="10"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)">
                             </div>
                             <div class="config-item">
                                 <label for="table-select">Mesa Asignada *</label>
