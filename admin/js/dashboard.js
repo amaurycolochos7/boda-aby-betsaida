@@ -807,7 +807,7 @@ async function handleCreatePass(e) {
         // Reset form
         document.getElementById('family-name').value = '';
         document.getElementById('family-phone').value = '';
-        document.getElementById('guest-count').value = '2';
+        document.getElementById('guest-count').value = '1';
         document.getElementById('table-select').value = '';
 
         showToast('Pase creado exitosamente', 'success');
