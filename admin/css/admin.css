@@ -1269,6 +1269,57 @@ body {
     margin-bottom: 1.5rem;
 }
 
+/* Botón especial "Sin Mesa" - contraste para estado normal y activo */
+.filter-no-table {
+    color: #f59e0b !important;
+    border-color: rgba(245, 158, 11, 0.4) !important;
+}
+
+.filter-no-table:hover {
+    background: rgba(245, 158, 11, 0.15) !important;
+    border-color: #f59e0b !important;
+}
+
+.filter-no-table.active {
+    background: #f59e0b !important;
+    border-color: #f59e0b !important;
+    color: #1a1a1a !important;
+    font-weight: 700;
+}
+
+/* Badges de conteo en los filtros */
+.filter-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 11px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-left: 4px;
+    background: rgba(255, 255, 255, 0.12);
+    color: inherit;
+    transition: all 0.3s ease;
+}
+
+.filter-btn.active .filter-count {
+    background: rgba(0, 0, 0, 0.2);
+    color: inherit;
+}
+
+.filter-no-table .filter-count {
+    background: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+}
+
+.filter-no-table.active .filter-count {
+    background: rgba(0, 0, 0, 0.25);
+    color: #1a1a1a;
+}
+
 .creator-filter {
     display: flex;
     align-items: center;

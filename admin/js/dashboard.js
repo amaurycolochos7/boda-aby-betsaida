@@ -94,6 +94,7 @@ function initNavigation() {
             if (section === 'guests') loadGuests();
             if (section === 'passes') loadRecentPasses();
             if (section === 'live-monitor') loadLiveMonitor();
+            if (section === 'tables') { renderTablesList(); populateTableSelect(); updateTablesCount(); }
         });
     });
 
@@ -136,6 +137,7 @@ function navigateToSection(section) {
     if (section === 'guests') loadGuests();
     if (section === 'passes') loadRecentPasses();
     if (section === 'live-monitor') loadLiveMonitor();
+    if (section === 'tables') { renderTablesList(); populateTableSelect(); updateTablesCount(); }
 }
 
 // Update current date display
@@ -156,10 +158,37 @@ async function loadDashboardData() {
 async function loadDashboardDataAsync() {
     await loadEventConfig();
     await loadTables();
+    // Auto-recuperar Mesa 1 si fue eliminada por accidente
+    await recoverMesa1IfMissing();
     await loadPasses();
+    // Re-renderizar mesas ahora que ya se cargaron los pases (para que los conteos sean correctos)
+    renderTablesList();
+    populateTableSelect();
+    updateTablesCount();
     updateStats();
     updateCurrentDate();
 }
+
+// Recuperar Mesa 1 automáticamente si no existe
+async function recoverMesa1IfMissing() {
+    const mesa1 = tables.find(t => t.table_number === 1);
+    if (!mesa1) {
+        console.log('Mesa 1 no encontrada, recuperándola...');
+        const supabase = getSupabase();
+        const { data, error } = await supabase
+            .from('tables')
+            .insert([{ table_number: 1, capacity: 10, occupied_seats: 0 }])
+            .select();
+        if (error) {
+            console.error('Error recuperando Mesa 1:', error);
+        } else {
+            console.log('Mesa 1 recuperada exitosamente');
+            // Recargar mesas para incluir la nueva
+            await loadTables();
+        }
+    }
+}
+
 // Load event configuration
 async function loadEventConfig() {
     const supabase = getSupabase();
@@ -181,6 +210,11 @@ async function loadEventConfig() {
 
         eventConfig = newConfig;
     }
+}
+
+// Calcular asientos ocupados de una mesa a partir de los pases asignados
+function getOccupiedSeats(tableId) {
+    return passes.filter(p => p.table_id === tableId).reduce((sum, p) => sum + p.total_guests, 0);
 }
 
 // Load tables
@@ -218,7 +252,7 @@ function updateTablesCount() {
     // Show/hide bulk delete button
     const bulkActions = document.getElementById('tables-bulk-actions');
     if (bulkActions) {
-        const hasEmptyTables = tables.some(t => t.occupied_seats === 0);
+        const hasEmptyTables = tables.some(t => getOccupiedSeats(t.id) === 0);
         bulkActions.style.display = hasEmptyTables ? 'block' : 'none';
     }
 }
@@ -357,7 +391,8 @@ function renderTablesGrid() {
     if (!container) return;
 
     container.innerHTML = tables.map(table => {
-        const occupiedPercent = (table.occupied_seats / table.capacity) * 100;
+        const realOccupied = getOccupiedSeats(table.id);
+        const occupiedPercent = (realOccupied / table.capacity) * 100;
         const statusClass = occupiedPercent >= 100 ? 'full' :
             occupiedPercent >= 50 ? 'partial' : 'empty';
 
@@ -365,7 +400,7 @@ function renderTablesGrid() {
             <div class="table-item ${statusClass}" onclick="showTableGuests('${table.id}', ${table.table_number})" style="cursor: pointer;">
                 <div class="table-number">Mesa ${table.table_number}</div>
                 <div class="table-occupancy">
-                    ${table.occupied_seats} / ${table.capacity}
+                    ${realOccupied} / ${table.capacity}
                 </div>
                 <div class="table-bar">
                     <div class="table-bar-fill" style="width: ${occupiedPercent}%"></div>
@@ -386,7 +421,7 @@ function populateTableSelect() {
 
     select.innerHTML = '<option value="">Selecciona una mesa</option>' +
         tables.map(table => {
-            const available = table.capacity - table.occupied_seats;
+            const available = table.capacity - getOccupiedSeats(table.id);
             // Show all tables, but disable if not enough space
             const isEnoughSpace = available >= requiredSeats;
             const disabled = !isEnoughSpace ? 'disabled' : '';
@@ -448,10 +483,11 @@ function renderTablesList() {
     }
 
     container.innerHTML = tables.map(table => {
-        const isOccupied = table.occupied_seats > 0;
-        const statusClass = isOccupied ? 'occupied' : 'empty';
+        // Calcular ocupación directamente de los pases asignados (más confiable que occupied_seats de la BD)
         const guestsAssigned = passes.filter(p => p.table_id === table.id);
         const totalGuests = guestsAssigned.reduce((sum, p) => sum + p.total_guests, 0);
+        const isOccupied = guestsAssigned.length > 0;
+        const statusClass = isOccupied ? 'occupied' : 'empty';
 
         return `
             <div class="table-list-item ${statusClass}" onclick="showTableGuests('${table.id}', ${table.table_number})" style="cursor: pointer;">
@@ -655,7 +691,7 @@ async function deleteSingleTable(tableId, tableNumber, isOccupied) {
 
 // Delete all empty tables
 async function deleteAllEmptyTables() {
-    const emptyTables = tables.filter(t => t.occupied_seats === 0);
+    const emptyTables = tables.filter(t => getOccupiedSeats(t.id) === 0);
 
     if (emptyTables.length === 0) {
         showToast('No hay mesas vacías para eliminar', 'info');
@@ -715,7 +751,7 @@ async function handleCreatePass(e) {
         return;
     }
 
-    const available = table.capacity - table.occupied_seats;
+    const available = table.capacity - getOccupiedSeats(table.id);
     if (guestCount > available) {
         showToast(`La Mesa ${table.table_number} solo tiene ${available} lugares disponibles`, 'error');
         return;
@@ -779,6 +815,10 @@ async function handleCreatePass(e) {
         // Reload data
         await loadTables();
         await loadPasses();
+        // Actualizar vistas de mesas con datos frescos
+        renderTablesList();
+        populateTableSelect();
+        updateTablesCount();
         updateStats();
 
     } catch (error) {
@@ -890,7 +930,7 @@ function loadGuests() {
             creatorRole === 'bride' ? 'Novia' : 'Sin asignar';
 
         return `
-            <div class="guest-card" data-status="${status.class}" data-family="${pass.family_name.toLowerCase()}" data-id="${pass.id}" data-creator-role="${creatorRole}">
+            <div class="guest-card" data-status="${status.class}" data-family="${pass.family_name.toLowerCase()}" data-id="${pass.id}" data-creator-role="${creatorRole}" data-has-table="${pass.table_id ? 'yes' : 'no'}">
                 <!-- Header -->
                 <div class="guest-card-header">
                     <div class="guest-card-title">
@@ -955,6 +995,9 @@ function loadGuests() {
             </div>
         `;
     }).join('');
+
+    // Actualizar badges de conteo en los filtros
+    updateFilterCounts();
 }
 
 // Get pass status
@@ -971,6 +1014,34 @@ function getPassStatus(pass) {
     return { class: 'pending', text: 'Pendiente' };
 }
 
+// Actualizar los conteos en los botones de filtro
+function updateFilterCounts() {
+    let countAll = passes.length;
+    let countPending = 0;
+    let countConfirmed = 0;
+    let countInside = 0;
+    let countNoTable = 0;
+
+    passes.forEach(pass => {
+        const status = getPassStatus(pass);
+        if (status.class === 'pending') countPending++;
+        if (['confirmed', 'partial', 'complete'].includes(status.class)) countConfirmed++;
+        if (['partial', 'complete'].includes(status.class)) countInside++;
+        if (!pass.table_id) countNoTable++;
+    });
+
+    const setCount = (id, count) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = count;
+    };
+
+    setCount('count-all', countAll);
+    setCount('count-pending', countPending);
+    setCount('count-confirmed', countConfirmed);
+    setCount('count-inside', countInside);
+    setCount('count-no-table', countNoTable);
+}
+
 // Filter guests by status
 function filterGuests(filter) {
     const cards = document.querySelectorAll('.guest-card');
@@ -982,6 +1053,9 @@ function filterGuests(filter) {
 
         if (filter === 'all') {
             shouldShow = true;
+        } else if (filter === 'no-table') {
+            // Mostrar invitados sin mesa asignada
+            shouldShow = card.dataset.hasTable === 'no';
         } else if (filter === 'confirmed') {
             // Show confirmed, partial, and complete guests (anyone who confirmed)
             shouldShow = ['confirmed', 'partial', 'complete'].includes(status);
@@ -1124,7 +1198,7 @@ function editPass(passId) {
                     <select id="edit-table" required>
                         ${tables.map(t => `
                             <option value="${t.id}" ${t.id === pass.table_id ? 'selected' : ''}>
-                                Mesa ${t.table_number} (${t.capacity - t.occupied_seats} disponibles)
+                                Mesa ${t.table_number} (${t.capacity - getOccupiedSeats(t.id)} disponibles)
                             </option>
                         `).join('')}
                     </select>
@@ -1194,6 +1268,10 @@ async function savePassEdit(e) {
         showToast('Pase actualizado correctamente', 'success');
         await loadTables();
         await loadPasses();
+        // Actualizar vistas de mesas con datos frescos
+        renderTablesList();
+        populateTableSelect();
+        updateTablesCount();
         updateStats();
 
     } catch (error) {
@@ -1237,6 +1315,10 @@ async function deletePass(passId) {
         showToast('Pase eliminado', 'success');
         await loadTables();
         await loadPasses();
+        // Actualizar vistas de mesas con datos frescos
+        renderTablesList();
+        populateTableSelect();
+        updateTablesCount();
         updateStats();
 
     } catch (error) {
