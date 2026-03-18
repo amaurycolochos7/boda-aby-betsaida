@@ -785,7 +785,7 @@
   .ec-phone { border-radius: 36px; padding: 10px; }
   .ec-phone-notch { height: 18px; width: 80px; top: 10px; }
   .ec-phone-screen { border-radius: 28px; }
-  .ec-demo-iframe { height: 520px; }
+  .ec-demo-iframe { height: 620px; }
 
   .ec-validation { padding: 60px 20px 80px; }
   .ec-cta { padding: 80px 20px; }
@@ -802,7 +802,7 @@
   .ec-phone { border-radius: 34px; padding: 8px; }
   .ec-phone-notch { height: 16px; width: 70px; top: 8px; }
   .ec-phone-screen { border-radius: 26px; }
-  .ec-demo-iframe { height: 480px; }
+  .ec-demo-iframe { height: 580px; }
 }
 
 @media (min-width: 1200px) {
