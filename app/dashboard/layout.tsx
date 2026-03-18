@@ -45,6 +45,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     );
   }
 
+  // If on the builder edit page, render full-screen without sidebar
+  const isBuilder = pathname.includes('/edit');
+  if (isBuilder) {
+    return <>{children}</>;
+  }
+
   return (
     <div className="dash-page">
       <div className="dash-layout">

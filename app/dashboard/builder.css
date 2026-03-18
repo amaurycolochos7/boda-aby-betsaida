@@ -1,0 +1,389 @@
+/* ═══════════════════════════════════════════════════════════════
+   Builder — Visual Editor with Live Preview
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── Layout ──────────────────────────────────────────────────── */
+.builder {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  grid-template-rows: 56px 1fr;
+  height: 100vh;
+  overflow: hidden;
+  background: #0f1117;
+}
+
+.builder-topbar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: #16181d;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  z-index: 10;
+}
+
+.builder-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.builder-back {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #888;
+  text-decoration: none;
+  font-size: 13px;
+  transition: color 0.15s;
+}
+.builder-back:hover { color: #fff; }
+.builder-back svg { width: 16px; height: 16px; }
+
+.builder-event-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #e4e4e7;
+  max-width: 240px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.builder-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.builder-save-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #666;
+  transition: color 0.3s;
+}
+.builder-save-status.saving { color: #f5a623; }
+.builder-save-status.saved { color: #27ae60; }
+.builder-save-status.error { color: #e74c3c; }
+
+.builder-save-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.builder-btn {
+  padding: 7px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-inter, system-ui, sans-serif);
+  transition: opacity 0.15s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.builder-btn:hover { opacity: 0.85; }
+
+.builder-btn-ghost {
+  background: transparent;
+  color: #999;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.builder-btn-ghost:hover { color: #fff; border-color: rgba(255,255,255,0.2); }
+
+.builder-btn-primary {
+  background: #fff;
+  color: #111;
+}
+
+/* ─── Panel (Left Side) ───────────────────────────────────────── */
+.builder-panel {
+  overflow-y: auto;
+  background: #1a1c22;
+  border-right: 1px solid rgba(255,255,255,0.06);
+  scrollbar-width: thin;
+  scrollbar-color: #333 transparent;
+}
+
+.builder-tabs {
+  display: flex;
+  padding: 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  position: sticky;
+  top: 0;
+  background: #1a1c22;
+  z-index: 5;
+}
+.builder-tab {
+  flex: 1;
+  padding: 12px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  text-align: center;
+  color: #666;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  font-family: var(--font-inter, system-ui, sans-serif);
+  white-space: nowrap;
+}
+.builder-tab:hover { color: #aaa; }
+.builder-tab.active {
+  color: #fff;
+  border-bottom-color: #fff;
+}
+
+.builder-tab-content {
+  padding: 20px;
+}
+
+/* ─── Form fields ─────────────────────────────────────────────── */
+.b-section {
+  margin-bottom: 28px;
+}
+
+.b-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #555;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.b-field {
+  margin-bottom: 14px;
+}
+
+.b-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: #999;
+  margin-bottom: 5px;
+}
+
+.b-field input,
+.b-field select,
+.b-field textarea {
+  width: 100%;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-family: var(--font-inter, system-ui, sans-serif);
+  background: #111318;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  color: #e4e4e7;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.b-field input:focus,
+.b-field select:focus,
+.b-field textarea:focus {
+  border-color: rgba(255,255,255,0.2);
+}
+
+.b-field textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.b-field select {
+  cursor: pointer;
+}
+
+.b-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.b-field-hint {
+  font-size: 10px;
+  color: #555;
+  margin-top: 3px;
+}
+
+/* ─── Preview (Right Side) ────────────────────────────────────── */
+.builder-preview {
+  display: flex;
+  flex-direction: column;
+  background: #0a0b0e;
+  overflow: hidden;
+}
+
+.builder-preview-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  gap: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.builder-device-btn {
+  padding: 5px 14px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: transparent;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--font-inter, system-ui, sans-serif);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.builder-device-btn:hover { color: #aaa; border-color: rgba(255,255,255,0.15); }
+.builder-device-btn.active {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  border-color: rgba(255,255,255,0.15);
+}
+.builder-device-btn svg { width: 14px; height: 14px; }
+
+.builder-preview-container {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.builder-preview-frame {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  transition: max-width 0.3s ease;
+  position: relative;
+}
+
+.builder-preview-frame.mobile {
+  max-width: 375px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 0 0 8px #222, 0 20px 60px -20px rgba(0,0,0,0.5);
+}
+
+.builder-preview-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+  background: #000;
+}
+
+.builder-preview-frame.mobile .builder-preview-iframe {
+  border-radius: 12px;
+}
+
+/* ─── Mobile Responsive ───────────────────────────────────────── */
+.builder-mobile-tabs {
+  display: none;
+  grid-column: 1 / -1;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: #16181d;
+}
+
+.builder-mobile-tab {
+  flex: 1;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  color: #666;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  font-family: var(--font-inter, system-ui, sans-serif);
+}
+.builder-mobile-tab.active {
+  color: #fff;
+  border-bottom-color: #fff;
+}
+
+@media (max-width: 900px) {
+  .builder {
+    grid-template-columns: 1fr;
+    grid-template-rows: 56px auto 1fr;
+  }
+  .builder-mobile-tabs {
+    display: flex;
+  }
+  .builder-panel {
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .builder-panel.hidden { display: none; }
+  .builder-preview.hidden { display: none; }
+  .builder-preview-container { padding: 16px; }
+  .builder-event-name { max-width: 140px; }
+}
+
+/* ─── WhatsApp contact list ──────────────────────────────────── */
+.b-wa-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.b-wa-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.b-wa-item input {
+  padding: 8px 10px;
+  font-size: 12px;
+}
+
+.b-wa-remove {
+  width: 28px; height: 28px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: transparent;
+  color: #e74c3c;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: opacity 0.15s;
+}
+.b-wa-remove:hover { opacity: 0.7; }
+
+.b-add-btn {
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 6px;
+  border: 1px dashed rgba(255,255,255,0.12);
+  background: transparent;
+  color: #888;
+  cursor: pointer;
+  font-family: var(--font-inter, system-ui, sans-serif);
+  transition: all 0.15s;
+  margin-top: 4px;
+}
+.b-add-btn:hover {
+  color: #fff;
+  border-color: rgba(255,255,255,0.2);
+}
