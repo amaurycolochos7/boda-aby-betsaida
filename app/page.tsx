@@ -120,49 +120,74 @@ export default function LandingPage() {
           </div>
           <div className="ec-section-visual">
             <div className="wa-phone">
+              {/* WhatsApp Header */}
               <div className="wa-header">
-                <span className="wa-back">&larr;</span>
-                <div className="wa-avatar">A</div>
-                <div className="wa-contact-info">
-                  <div className="wa-contact-name">Abidan</div>
-                  <div className="wa-contact-status">en linea</div>
+                <div className="wa-header-left">
+                  <svg className="wa-icon" viewBox="0 0 24 24" fill="#fff"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                  <div className="wa-avatar">A</div>
+                  <div className="wa-contact-info">
+                    <div className="wa-contact-name">Abidan</div>
+                    <div className="wa-contact-status">en línea</div>
+                  </div>
+                </div>
+                <div className="wa-header-right">
+                  <svg className="wa-icon" viewBox="0 0 24 24" fill="#fff"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+                  <svg className="wa-icon" viewBox="0 0 24 24" fill="#fff"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                  <svg className="wa-icon" viewBox="0 0 24 24" fill="#fff"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
                 </div>
               </div>
+
+              {/* WhatsApp Chat Area */}
               <div className="wa-chat">
-                <div className="wa-date-chip">HOY</div>
-                <div className="wa-bubble-in">
-                  <div className="wa-link-preview">
-                    <div className="wa-link-preview-bar"></div>
-                    <div className="wa-link-preview-body">
-                      <div className="wa-link-preview-domain">eventcontrol.site</div>
-                      <div className="wa-link-preview-title">Boda Abidan y Betsaida</div>
-                      <div className="wa-link-preview-desc">Te invitamos a celebrar con nosotros</div>
+                <div className="wa-wallpaper"></div>
+                <div className="wa-messages">
+                  <div className="wa-date-chip">HOY</div>
+                  <div className="wa-bubble-in">
+                    <div className="wa-link-preview">
+                      <div className="wa-link-preview-bar"></div>
+                      <div className="wa-link-preview-body">
+                        <div className="wa-link-preview-domain">eventcontrol.site</div>
+                        <div className="wa-link-preview-title">Boda Abidán y Betsaida</div>
+                        <div className="wa-link-preview-desc">Te invitamos a celebrar con nosotros</div>
+                      </div>
+                    </div>
+                    <p className="wa-bubble-text">
+                      Hola <strong>María López</strong>, nos da mucha alegría invitarlos a nuestra boda.<br /><br />
+                      Para ver los detalles y <strong>confirmar su asistencia</strong>, por favor ingresa:<br />
+                      <span className="wa-link-url">eventcontrol.site/event/abidan-betsaida</span><br /><br />
+                      Tu código de acceso es: <strong>ESGW</strong><br /><br />
+                      ¡Esperamos contar con su presencia!
+                    </p>
+                    <div className="wa-bubble-meta">
+                      <span className="wa-time">10:32 a.m.</span>
                     </div>
                   </div>
-                  <p className="wa-bubble-text">
-                    Hola <strong>Maria Lopez</strong>, nos da mucha alegria invitarlos a nuestra boda.<br /><br />
-                    Para ver los detalles y <strong>confirmar su asistencia</strong>, por favor ingresa:<br />
-                    <span className="wa-link-url">eventcontrol.site/event/abidan-betsaida</span><br /><br />
-                    Tu codigo de acceso es: <strong>ESGW</strong><br /><br />
-                    Esperamos contar con su presencia!
-                  </p>
-                  <div className="wa-bubble-meta">
-                    <span className="wa-time">10:32 a.m.</span>
-                  </div>
-                </div>
-                <div className="wa-bubble-out">
-                  <p className="wa-bubble-text">
-                    Hola Abidan! Gracias por la invitacion, confirmare enseguida
-                  </p>
-                  <div className="wa-bubble-meta">
-                    <span className="wa-time">2:14 p.m.</span>
-                    <span className="wa-check">&#10003;&#10003;</span>
+                  <div className="wa-bubble-out">
+                    <p className="wa-bubble-text">
+                      ¡Hola Abidán! Gracias por la invitación, confirmaré enseguida 🎉
+                    </p>
+                    <div className="wa-bubble-meta">
+                      <span className="wa-time">2:14 p.m.</span>
+                      <svg className="wa-check-icon" viewBox="0 0 16 11" fill="#53bdeb"><path d="M11.071.653a.457.457 0 00-.304-.102.493.493 0 00-.381.178l-6.19 7.636-2.405-2.272a.463.463 0 00-.336-.146.47.47 0 00-.343.146l-.311.31a.445.445 0 00-.14.337c0 .136.046.254.14.337l2.995 2.83a.48.48 0 00.347.153c.14 0 .265-.06.377-.176l6.683-8.253a.456.456 0 00.108-.305.456.456 0 00-.108-.305l-.132-.368z"/><path d="M14.871.653a.457.457 0 00-.304-.102.493.493 0 00-.381.178l-6.19 7.636-1.2-1.134-.349.427 1.486 1.4a.48.48 0 00.347.153c.14 0 .265-.06.377-.176l6.683-8.253a.456.456 0 00.108-.305.456.456 0 00-.108-.305l-.469-.519z"/></svg>
+                    </div>
                   </div>
                 </div>
               </div>
+
+              {/* WhatsApp Input Bar */}
               <div className="wa-input">
-                <div className="wa-input-field">Mensaje</div>
-                <div className="wa-input-send">&#9654;</div>
+                <div className="wa-input-field">
+                  <svg className="wa-input-icon" viewBox="0 0 24 24" fill="#8696a0"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/></svg>
+                  <span className="wa-input-placeholder">Mensaje</span>
+                </div>
+                <div className="wa-input-actions">
+                  <svg className="wa-input-icon" viewBox="0 0 24 24" fill="#8696a0"><path d="M1.816 15.556v.002c0 1.502.584 2.912 1.646 3.972s2.472 1.647 3.974 1.647a5.58 5.58 0 003.972-1.645l9.547-9.548c.769-.768 1.147-1.767 1.058-2.817-.079-.968-.548-1.927-1.319-2.698-1.594-1.592-4.068-1.711-5.517-.262l-7.916 7.915c-.881.881-.792 2.25.214 3.261.501.501 1.171.802 1.823.802a1.585 1.585 0 001.173-.496l5.852-5.851-.354-.354-5.851 5.85a1.182 1.182 0 01-1.632.07c-.822-.826-.905-1.94-.214-2.632l7.916-7.915c1.258-1.258 3.406-1.143 4.785.235 1.379 1.38 1.495 3.527.236 4.786l-9.547 9.547a5.09 5.09 0 01-3.618 1.5 5.09 5.09 0 01-3.618-1.5 5.09 5.09 0 01-1.5-3.618v-.001z"/></svg>
+                  <svg className="wa-input-icon" viewBox="0 0 24 24" fill="#8696a0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 3h2v2h-2V5zm4 14H9v-1l1-1v-4H9v-1l3-1h1v6l1 1v1z"/></svg>
+                  <svg className="wa-input-icon wa-camera-icon" viewBox="0 0 24 24" fill="#8696a0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5-6l2.03-2.71L11 14l2.47-3.29L17 15H7z"/></svg>
+                </div>
+                <div className="wa-mic-btn">
+                  <svg viewBox="0 0 24 24" fill="#fff"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
+                </div>
               </div>
             </div>
           </div>
