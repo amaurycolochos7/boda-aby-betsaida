@@ -1,13 +1,16 @@
 'use client';
 
 import { EventCustom } from '@/lib/types';
+import MediaUploader from '../MediaUploader';
 
 interface Props {
   custom: EventCustom;
-  onCustomChange: (path: string, value: string) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onCustomChange: (path: string, value: any) => void;
+  eventId: string;
 }
 
-export default function TabDiseno({ custom, onCustomChange }: Props) {
+export default function TabDiseno({ custom, onCustomChange, eventId }: Props) {
   return (
     <div className="builder-tab-content">
       <div className="b-section">
@@ -44,7 +47,15 @@ export default function TabDiseno({ custom, onCustomChange }: Props) {
 
       <div className="b-section">
         <div className="b-section-title">Hero</div>
-        <div className="b-field">
+        <MediaUploader
+          eventId={eventId}
+          category="hero"
+          accept="image/*"
+          value={custom.heroImage || ''}
+          onChange={(url) => onCustomChange('heroImage', url)}
+          label="Imagen de fondo del Hero"
+        />
+        <div className="b-field" style={{ marginTop: '0.5rem' }}>
           <label>Frase principal</label>
           <input
             value={custom.theme?.heroPhrase || ''}

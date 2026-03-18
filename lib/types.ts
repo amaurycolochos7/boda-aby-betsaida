@@ -61,6 +61,7 @@ export interface EventCustom {
   timeline?: TimelineItem[];
   gallery?: string[];         // URLs of gallery images
   coupleImages?: string[];    // URLs of couple section images
+  heroImage?: string;         // Uploaded hero background image URL
   music?: string;             // URL of background audio
   whatsapp?: WhatsAppContact[];
   rsvp?: {

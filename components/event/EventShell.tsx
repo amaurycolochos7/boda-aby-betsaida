@@ -83,6 +83,13 @@ export default function EventShell({ event, children }: EventShellProps) {
   const entryInitials = custom.entryScreen?.initials || ['E', 'C'];
   const entrySubtitle = custom.entryScreen?.subtitle || 'Evento';
   const dateFormatted = formatDate(event.core.date);
+  const heroImage = custom.heroImage || event.core.heroImage || '';
+
+  // CSS custom properties for dynamic backgrounds
+  const cssVars = {
+    '--entry-bg': heroImage ? `url(${heroImage})` : '#1a1a1a',
+    '--hero-bg': heroImage ? `url(${heroImage})` : '#333',
+  } as React.CSSProperties;
 
   return (
     <>
@@ -95,7 +102,7 @@ export default function EventShell({ event, children }: EventShellProps) {
 
       {/* ==================== ENTRY SCREEN ==================== */}
       {!entered && (
-        <div id="entry-screen" className="entry-screen">
+        <div id="entry-screen" className="entry-screen" style={cssVars}>
           <div className="entry-overlay"></div>
           <div className="entry-content">
             <p className="entry-subtitle fade-in">{entrySubtitle}</p>
@@ -125,6 +132,7 @@ export default function EventShell({ event, children }: EventShellProps) {
       <div
         id="main-content"
         className={`main-content ${entered ? 'show' : 'hidden'}`}
+        style={cssVars}
       >
         {/* Hamburger Menu Button */}
         <button

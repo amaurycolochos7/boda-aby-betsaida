@@ -230,7 +230,7 @@ export default function BuilderLayout({ eventId }: Props) {
           <TabPareja custom={custom} onCustomChange={handleCustomChange} />
         )}
         {activeTab === 2 && (
-          <TabDiseno custom={custom} onCustomChange={handleCustomChange} />
+          <TabDiseno custom={custom} onCustomChange={handleCustomChange} eventId={eventId} />
         )}
         {activeTab === 3 && (
           <TabGaleria
