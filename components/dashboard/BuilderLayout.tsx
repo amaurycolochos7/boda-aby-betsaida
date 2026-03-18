@@ -9,6 +9,8 @@ import TabPareja from './tabs/TabPareja';
 import TabDiseno from './tabs/TabDiseno';
 import TabRsvp from './tabs/TabRsvp';
 import TabFooter from './tabs/TabFooter';
+import TabGaleria from './tabs/TabGaleria';
+import TabFotos from './tabs/TabFotos';
 import '@/app/dashboard/builder.css';
 
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
@@ -48,7 +50,7 @@ export default function BuilderLayout({ eventId }: Props) {
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasChanges = useRef(false);
 
-  const tabs = ['Evento', 'Pareja', 'Diseño', 'RSVP', 'Footer'];
+  const tabs = ['Evento', 'Pareja', 'Diseño', 'Galería', 'Fotos', 'RSVP', 'Footer'];
 
   // ─── Load Event ──────────────────────────────────────────
   useEffect(() => {
@@ -110,7 +112,8 @@ export default function BuilderLayout({ eventId }: Props) {
     scheduleSave();
   }
 
-  function handleCustomChange(path: string, value: string) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function handleCustomChange(path: string, value: any) {
     if (!custom) return;
     setCustom(deepSet(custom, path, value));
     scheduleSave();
@@ -230,14 +233,28 @@ export default function BuilderLayout({ eventId }: Props) {
           <TabDiseno custom={custom} onCustomChange={handleCustomChange} />
         )}
         {activeTab === 3 && (
+          <TabGaleria
+            eventId={eventId}
+            gallery={custom.gallery || []}
+            onChange={handleCustomChange}
+          />
+        )}
+        {activeTab === 4 && (
+          <TabFotos
+            eventId={eventId}
+            coupleImages={custom.coupleImages || []}
+            onChange={handleCustomChange}
+          />
+        )}
+        {activeTab === 5 && (
           <TabRsvp
             custom={custom}
             onCustomChange={handleCustomChange}
             onWhatsAppChange={handleWhatsAppChange}
           />
         )}
-        {activeTab === 4 && (
-          <TabFooter custom={custom} onCustomChange={handleCustomChange} />
+        {activeTab === 6 && (
+          <TabFooter custom={custom} onCustomChange={handleCustomChange} eventId={eventId} />
         )}
       </div>
 
