@@ -1,26 +1,17 @@
-import { createClient } from '@supabase/supabase-js';
+import pool from './db';
 import { EventConfig, EventRow } from './types';
 import { DEMO_EVENT } from './demo-event';
 
-// ─── Supabase Client ────────────────────────────────────────
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://pwrixdojbrmtwyfmygys.supabase.co';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3cml4ZG9qYnJtdHd5Zm15Z3lzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2MTkyNTQsImV4cCI6MjA4MjE5NTI1NH0.xR7kmjDRiECOu7usPyzNKcg-dtIQCRNdnuI49Sl799U';
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-// ─── Fetch Event by Slug ────────────────────────────────────
+// ─── Fetch Event by Slug (Server-Side → PostgreSQL) ─────────
 
 export async function getEventBySlug(slug: string): Promise<EventConfig | null> {
   try {
-    const { data, error } = await supabase
-      .from('events')
-      .select('*')
-      .eq('slug', slug)
-      .eq('is_active', true)
-      .single();
+    const result = await pool.query(
+      'SELECT * FROM events WHERE slug = $1 AND is_active = true LIMIT 1',
+      [slug]
+    );
 
-    if (error || !data) {
+    if (result.rows.length === 0) {
       // Fallback: if slug matches demo event, return demo
       if (slug === DEMO_EVENT.core.slug) {
         return DEMO_EVENT;
@@ -28,17 +19,13 @@ export async function getEventBySlug(slug: string): Promise<EventConfig | null> 
       return null;
     }
 
-    const row = data as EventRow;
+    const row = result.rows[0] as EventRow;
 
     // Increment views (fire-and-forget)
-    supabase
-      .from('events')
-      .update({
-        views_count: (row.views_count || 0) + 1,
-        last_viewed: new Date().toISOString(),
-      })
-      .eq('id', row.id)
-      .then();
+    pool.query(
+      'UPDATE events SET views_count = views_count + 1, last_viewed = now() WHERE id = $1',
+      [row.id]
+    ).catch(() => {});
 
     return {
       core: row.core,
