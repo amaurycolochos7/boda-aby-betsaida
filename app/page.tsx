@@ -84,28 +84,18 @@ export default function LandingPage() {
         <p className="ec-demo-sub">Creado con EventControl y usado con invitados reales</p>
 
         <div className="ec-demo-device">
-          <a href="/event/abidan-betsaida" className="ec-phone-link">
-            <div className="ec-phone">
-              <div className="ec-phone-notch"></div>
-              <div className="ec-phone-screen">
-                <iframe
-                  className="ec-demo-iframe"
-                  src="/event/abidan-betsaida"
-                  title="Demo EventControl"
-                  loading="lazy"
-                />
-              </div>
-              <div className="ec-phone-bar"></div>
+          <div className="ec-phone">
+            <div className="ec-phone-notch"></div>
+            <div className="ec-phone-screen">
+              <iframe
+                className="ec-demo-iframe"
+                src="/event/abidan-betsaida"
+                title="Demo EventControl"
+                loading="lazy"
+              />
             </div>
-          </a>
-          <a href="/event/abidan-betsaida" className="ec-demo-cta-mobile">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-              <polyline points="15 3 21 3 21 9" />
-              <line x1="10" y1="14" x2="21" y2="3" />
-            </svg>
-            Ver invitación completa
-          </a>
+            <div className="ec-phone-bar"></div>
+          </div>
         </div>
       </section>
 
