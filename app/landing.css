@@ -332,6 +332,30 @@
   margin: 6px auto 0;
 }
 
+.ec-phone-link {
+  display: block;
+  text-decoration: none;
+  pointer-events: none;
+}
+
+.ec-demo-cta-mobile {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 12px 24px;
+  background: var(--bg-dark);
+  color: var(--white);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: var(--sans);
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+.ec-demo-cta-mobile:hover { opacity: 0.9; }
+
 /* ─── Validation ───────────────────────────────────────────── */
 .ec-validation {
   padding: 80px 24px 100px;
@@ -793,6 +817,8 @@
 
   .ec-list, .ec-panel, .wa-phone { max-width: 100%; }
   .ec-demo-device { max-width: 260px; }
+  .ec-demo-cta-mobile { display: flex; }
+  .ec-phone-link { pointer-events: auto; }
 }
 
 @media (max-width: 440px) {
