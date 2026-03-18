@@ -589,9 +589,12 @@
   color: #667781;
 }
 .wa-input-icon {
-  width: 22px; height: 22px;
+  width: 24px; height: 24px;
   flex-shrink: 0;
   cursor: pointer;
+}
+.wa-clip-icon {
+  transform: rotate(-45deg);
 }
 .wa-input-actions {
   display: flex;
@@ -785,7 +788,7 @@
   .ec-phone { border-radius: 36px; padding: 10px; }
   .ec-phone-notch { height: 18px; width: 80px; top: 10px; }
   .ec-phone-screen { border-radius: 28px; }
-  .ec-demo-iframe { height: 620px; }
+  .ec-demo-iframe { height: 700px; }
 
   .ec-validation { padding: 60px 20px 80px; }
   .ec-cta { padding: 80px 20px; }
@@ -794,15 +797,15 @@
   .ec-header { padding: 0 20px; }
 
   .ec-list, .ec-panel, .wa-phone { max-width: 100%; }
-  .ec-demo-device { max-width: 260px; }
+  .ec-demo-device { max-width: 360px; }
 }
 
 @media (max-width: 440px) {
-  .ec-demo-device { max-width: 240px; }
+  .ec-demo-device { max-width: 320px; }
   .ec-phone { border-radius: 34px; padding: 8px; }
   .ec-phone-notch { height: 16px; width: 70px; top: 8px; }
   .ec-phone-screen { border-radius: 26px; }
-  .ec-demo-iframe { height: 580px; }
+  .ec-demo-iframe { height: 660px; }
 }
 
 @media (min-width: 1200px) {

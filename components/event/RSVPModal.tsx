@@ -93,6 +93,9 @@ export default function RSVPModal({
             </p>
           )}
 
+
+
+
           {rsvpNote && (
             <p className="rsvp-note animate-on-scroll">{rsvpNote}</p>
           )}

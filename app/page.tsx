@@ -177,16 +177,34 @@ export default function LandingPage() {
               {/* WhatsApp Input Bar */}
               <div className="wa-input">
                 <div className="wa-input-field">
-                  <svg className="wa-input-icon" viewBox="0 0 24 24" fill="#8696a0"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/></svg>
+                  {/* Emoji icon — outlined smiley */}
+                  <svg className="wa-input-icon" viewBox="0 0 24 24" fill="none" stroke="#54656f" strokeWidth="1.5">
+                    <circle cx="12" cy="12" r="9.5" />
+                    <circle cx="9" cy="10" r="1.2" fill="#54656f" stroke="none" />
+                    <circle cx="15" cy="10" r="1.2" fill="#54656f" stroke="none" />
+                    <path d="M8.5 14.5c.8 1.5 2 2.5 3.5 2.5s2.7-1 3.5-2.5" strokeLinecap="round" />
+                  </svg>
                   <span className="wa-input-placeholder">Mensaje</span>
                 </div>
                 <div className="wa-input-actions">
-                  <svg className="wa-input-icon" viewBox="0 0 24 24" fill="#8696a0"><path d="M1.816 15.556v.002c0 1.502.584 2.912 1.646 3.972s2.472 1.647 3.974 1.647a5.58 5.58 0 003.972-1.645l9.547-9.548c.769-.768 1.147-1.767 1.058-2.817-.079-.968-.548-1.927-1.319-2.698-1.594-1.592-4.068-1.711-5.517-.262l-7.916 7.915c-.881.881-.792 2.25.214 3.261.501.501 1.171.802 1.823.802a1.585 1.585 0 001.173-.496l5.852-5.851-.354-.354-5.851 5.85a1.182 1.182 0 01-1.632.07c-.822-.826-.905-1.94-.214-2.632l7.916-7.915c1.258-1.258 3.406-1.143 4.785.235 1.379 1.38 1.495 3.527.236 4.786l-9.547 9.547a5.09 5.09 0 01-3.618 1.5 5.09 5.09 0 01-3.618-1.5 5.09 5.09 0 01-1.5-3.618v-.001z"/></svg>
-                  <svg className="wa-input-icon" viewBox="0 0 24 24" fill="#8696a0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 3h2v2h-2V5zm4 14H9v-1l1-1v-4H9v-1l3-1h1v6l1 1v1z"/></svg>
-                  <svg className="wa-input-icon wa-camera-icon" viewBox="0 0 24 24" fill="#8696a0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5-6l2.03-2.71L11 14l2.47-3.29L17 15H7z"/></svg>
+                  {/* Paperclip icon — rotated attachment */}
+                  <svg className="wa-input-icon wa-clip-icon" viewBox="0 0 24 24" fill="none" stroke="#54656f" strokeWidth="1.6" strokeLinecap="round">
+                    <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" />
+                  </svg>
+                  {/* Camera icon */}
+                  <svg className="wa-input-icon" viewBox="0 0 24 24" fill="none" stroke="#54656f" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" />
+                    <circle cx="12" cy="13" r="4" />
+                  </svg>
                 </div>
+                {/* Mic button */}
                 <div className="wa-mic-btn">
-                  <svg viewBox="0 0 24 24" fill="#fff"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="9" y="2" width="6" height="12" rx="3" />
+                    <path d="M5 10a7 7 0 0014 0" />
+                    <line x1="12" y1="17" x2="12" y2="21" />
+                    <line x1="8" y1="21" x2="16" y2="21" />
+                  </svg>
                 </div>
               </div>
             </div>
