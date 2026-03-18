@@ -1,14 +1,29 @@
 {
-    "name": "boda-abidan-betsaida",
-    "version": "1.0.0",
-    "description": "Sitio web de boda para Abidan y Betsaida",
-    "scripts": {
-        "dev": "python -m http.server 8000",
-        "test-keep-alive": "node scripts/test-keep-alive.js"
-    },
-    "dependencies": {
-        "@supabase/supabase-js": "^2.39.0"
-    },
-    "devDependencies": {},
-    "type": "module"
+  "name": "eventcontrol-multi-evento",
+  "version": "2.0.0",
+  "description": "Motor de eventos dinámico - EventControl",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "better-auth": "^1.5.5",
+    "next": "^15.3.2",
+    "pg": "^8.20.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/pg": "^8.18.0",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "^15.3.2",
+    "typescript": "^5"
+  }
 }
