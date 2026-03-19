@@ -106,3 +106,45 @@ export function TestimonialCarousel({ items }: { items: TestimonialData[] }) {
     </div>
   );
 }
+
+const EXAMPLE_URLS = [
+  'ana-y-luis',
+  '15-valeria',
+  'boda-reyes',
+  'fiesta-sofia',
+];
+
+export function AnimatedURL() {
+  const [index, setIndex] = useState(0);
+  const [fading, setFading] = useState(false);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setFading(true);
+      setTimeout(() => {
+        setIndex((prev) => (prev + 1) % EXAMPLE_URLS.length);
+        setFading(false);
+      }, 300);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="ec-url-demo">
+      <div className="ec-url-before">
+        <span className="ec-url-label">Antes</span>
+        <span className="ec-url-old">eventcontrol.site/event/mi-boda</span>
+      </div>
+      <div className="ec-url-after">
+        <span className="ec-url-label">Ahora</span>
+        <span className="ec-url-bar">
+          <span className="ec-url-lock">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0110 0v4" /></svg>
+          </span>
+          <span className={`ec-url-slug ${fading ? 'ec-url-fading' : ''}`}>{EXAMPLE_URLS[index]}</span>
+          <span className="ec-url-domain">.eventcontrol.site</span>
+        </span>
+      </div>
+    </div>
+  );
+}

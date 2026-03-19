@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ScrollAnimator, FAQList, TestimonialCarousel } from '@/components/landing/LandingInteractive';
+import { ScrollAnimator, FAQList, TestimonialCarousel, AnimatedURL } from '@/components/landing/LandingInteractive';
 import type { Metadata } from 'next';
 
 import './landing.css';
@@ -76,6 +76,16 @@ export default function LandingPage() {
             <div className="ec-feature-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg></div>
             <div><strong>Panel en</strong><span>tiempo real</span></div>
           </div>
+        </div>
+      </section>
+
+      {/* ── Tu Propio Sitio (HERO FEATURE) ─────────────────── */}
+      <section className="ec-subdomain">
+        <div className="ec-subdomain-inner ec-animate">
+          <p className="ec-subdomain-label">Tu propio sitio</p>
+          <h2 className="ec-subdomain-title">Tu evento tiene su propia direccion web</h2>
+          <p className="ec-subdomain-sub">Facil de compartir, facil de recordar. Cada evento con su identidad unica.</p>
+          <AnimatedURL />
         </div>
       </section>
 
@@ -295,7 +305,7 @@ export default function LandingPage() {
               <p className="ec-pricing-desc">Control total de tu evento, desde invitados hasta proveedores.</p>
               <ul className="ec-pricing-features">
                 <li><CheckIcon /> Todo lo de Inicio</li>
-                <li><CheckIcon /> Galeria ilimitada de fotos</li>
+                <li><CheckIcon /> Subdominio propio (tuboda.eventcontrol.site)</li>
                 <li><CheckIcon /> Padrinos, cortejo y mesas</li>
                 <li><CheckIcon /> Proveedores y presupuesto</li>
                 <li><CheckIcon /> Itinerario detallado</li>
@@ -310,7 +320,7 @@ export default function LandingPage() {
               <p className="ec-pricing-desc">Tu evento con funciones exclusivas y personalizacion avanzada.</p>
               <ul className="ec-pricing-features">
                 <li><CheckIcon /> Todo lo de Pro</li>
-                <li><CheckIcon /> Plantillas exclusivas</li>
+                <li><CheckIcon /> Subdominio propio (tuboda.eventcontrol.site)</li>
                 <li><CheckIcon /> Acceso con QR para invitados</li>
                 <li><CheckIcon /> Sin marca de EventControl</li>
                 <li><CheckIcon /> Soporte prioritario</li>
@@ -325,9 +335,9 @@ export default function LandingPage() {
               <p className="ec-pricing-desc">Para profesionales que manejan multiples eventos a la vez.</p>
               <ul className="ec-pricing-features">
                 <li><CheckIcon /> Todas las funciones Premium</li>
+                <li><CheckIcon /> Subdominios ilimitados para cada cliente</li>
                 <li><CheckIcon /> Eventos y clientes ilimitados</li>
                 <li><CheckIcon /> Tu marca en cada invitacion</li>
-                <li><CheckIcon /> Plantillas reutilizables</li>
                 <li><CheckIcon /> Reportes y soporte dedicado</li>
               </ul>
               <Link href="/register" className="ec-pricing-cta ec-pricing-cta-dark">Contactar ventas</Link>
