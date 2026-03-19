@@ -182,7 +182,7 @@ export default function CreateEventPage() {
               ← Atrás
             </button>
             <button className="btn-primary" onClick={handleCreate} disabled={loading}>
-              {loading ? 'Creando...' : 'Crear mi evento 🚀'}
+              {loading ? 'Creando...' : 'Crear mi evento'}
             </button>
           </div>
         </>
