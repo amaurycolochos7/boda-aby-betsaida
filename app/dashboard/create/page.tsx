@@ -6,11 +6,11 @@ import Link from 'next/link';
 import { createEvent } from '@/lib/auth';
 
 const EVENT_TYPES = [
-  { value: 'wedding', icon: '💍', label: 'Boda' },
-  { value: 'quinceañera', icon: '👑', label: 'XV Años' },
-  { value: 'birthday', icon: '🎂', label: 'Cumpleaños' },
-  { value: 'corporate', icon: '🏢', label: 'Corporativo' },
-  { value: 'other', icon: '🎉', label: 'Otro' },
+  { value: 'wedding', label: 'Boda', icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="8" cy="14" r="4" /><circle cx="16" cy="14" r="4" /><path d="M12 10V2" /><path d="M9 4l3-2 3 2" /></svg> },
+  { value: 'quinceañera', label: 'XV Años', icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 2l2.4 4.8L20 8l-4 3.8.9 5.2L12 14.5 7.1 17l.9-5.2L4 8l5.6-1.2z" /></svg> },
+  { value: 'birthday', label: 'Cumpleaños', icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="14" width="20" height="8" rx="2" /><rect x="4" y="10" width="16" height="4" rx="1" /><path d="M12 6V10" /><circle cx="12" cy="4" r="1.5" /></svg> },
+  { value: 'corporate', label: 'Corporativo', icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="4" y="6" width="16" height="16" rx="2" /><path d="M4 10h16" /><path d="M12 6v16" /><rect x="8" y="2" width="8" height="4" rx="1" /></svg> },
+  { value: 'other', label: 'Otro', icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 2l2 7h7l-5.5 4 2 7L12 16l-5.5 4 2-7L3 9h7z" /></svg> },
 ];
 
 const FIELDS_BY_TYPE: Record<string, { label: string; placeholder: string; nameLabel?: string; namePlaceholder?: string }> = {
@@ -162,7 +162,7 @@ export default function CreateEventPage() {
               padding: '24px',
               textAlign: 'center',
             }}>
-              <div style={{ fontSize: '40px', marginBottom: '12px' }}>
+              <div style={{ marginBottom: '12px', color: 'var(--dash-text)' }}>
                 {EVENT_TYPES.find(t => t.value === type)?.icon}
               </div>
               <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--dash-text)', marginBottom: '4px' }}>
