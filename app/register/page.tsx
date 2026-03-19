@@ -13,7 +13,7 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [phase, setPhase] = useState<'form' | 'transition'>('form');
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -28,8 +28,9 @@ export default function RegisterPage() {
 
     try {
       await signUp(email, password);
-      setSuccess(true);
-      setTimeout(() => router.push('/login'), 2000);
+      // Auto-login ya incluido en el API — mostrar micro-feedback
+      setPhase('transition');
+      setTimeout(() => router.push('/dashboard/create'), 2200);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Error al registrarse';
       setError(message);
@@ -38,22 +39,29 @@ export default function RegisterPage() {
     }
   }
 
-  if (success) {
+  // ── Micro-feedback transition ─────────────────────────────
+  if (phase === 'transition') {
     return (
       <div className="auth-container">
-        <div className="auth-card">
-          <div className="auth-logo">
-            <h1>EventControl</h1>
-            <p>¡Cuenta creada exitosamente!</p>
+        <div className="auth-card" style={{ textAlign: 'center' }}>
+          <div className="onboard-transition">
+            <div className="onboard-check">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <h2 className="onboard-title">¡Cuenta creada!</h2>
+            <p className="onboard-sub">Vamos a crear tu primer evento...</p>
+            <div className="onboard-progress">
+              <div className="onboard-progress-bar" />
+            </div>
           </div>
-          <p style={{ textAlign: 'center', color: '#22c55e', fontSize: '14px' }}>
-            Revisa tu correo para confirmar tu cuenta. Redirigiendo al login...
-          </p>
         </div>
       </div>
     );
   }
 
+  // ── Registration form ─────────────────────────────────────
   return (
     <div className="auth-container">
       <div className="auth-card">

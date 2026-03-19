@@ -793,8 +793,9 @@
   .ec-validation { padding: 60px 20px 80px; }
   .ec-cta { padding: 80px 20px; }
 
-  .ec-nav-link { display: none; }
-  .ec-header { padding: 0 20px; }
+  .ec-nav-link { font-size: 12px; padding: 6px 10px; }
+  .ec-nav-btn { font-size: 11px; padding: 6px 14px; margin-left: 4px; }
+  .ec-header { padding: 0 16px; }
 
   .ec-list, .ec-panel, .wa-phone { max-width: 100%; }
   .ec-demo-device { max-width: 360px; }
@@ -929,22 +930,47 @@
   color: var(--text-mid);
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
+  .ec-subdomain {
+    padding: 64px 20px;
+  }
+
+  .ec-subdomain-title {
+    font-size: 22px;
+  }
+
+  .ec-subdomain-sub {
+    font-size: 14px;
+    margin-bottom: 32px;
+  }
+
+  .ec-url-demo {
+    gap: 20px;
+  }
+
   .ec-url-before,
   .ec-url-after {
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
     align-items: stretch;
   }
 
   .ec-url-label {
     text-align: left;
+    font-size: 12px;
   }
 
-  .ec-url-old,
+  .ec-url-old {
+    font-size: 13px;
+    padding: 14px 16px;
+    border-radius: 12px;
+  }
+
   .ec-url-bar {
-    font-size: 12px;
-    padding: 10px 14px;
+    font-size: 13px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    flex-wrap: wrap;
   }
 }
 

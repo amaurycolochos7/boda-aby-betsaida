@@ -1,5 +1,5 @@
 // ============================================================
-// EventControl — Data Schema (2 Capas)
+// EventControl — Data Schema (2 Capas + Modulos)
 // ============================================================
 
 // ─── Helpers ─────────────────────────────────────────────────
@@ -26,11 +26,38 @@ export interface TimelineItem {
   description?: string;
 }
 
+export interface Padrino {
+  name: string;
+  role: string;
+  phone?: string;
+  confirmed?: boolean;
+}
+
+// ─── Modulos activables por evento ──────────────────────────
+
+export interface EventModules {
+  padrinos: boolean;
+  checklist: boolean;
+  seating: boolean;
+  checkin: boolean;
+  proveedores: boolean;
+}
+
+export type EventType = 'wedding' | 'quinceañera' | 'birthday' | 'corporate' | 'other';
+
+export const DEFAULT_MODULES: Record<EventType, EventModules> = {
+  wedding:      { padrinos: true,  checklist: true,  seating: true,  checkin: true,  proveedores: true  },
+  'quinceañera':{ padrinos: false, checklist: true,  seating: true,  checkin: true,  proveedores: true  },
+  birthday:     { padrinos: false, checklist: true,  seating: false, checkin: false, proveedores: false },
+  corporate:    { padrinos: false, checklist: true,  seating: true,  checkin: true,  proveedores: true  },
+  other:        { padrinos: false, checklist: true,  seating: false, checkin: false, proveedores: false },
+};
+
 // ─── CAPA 1: EventCore (obligatorio) ────────────────────────
 
 export interface EventCore {
   slug: string;
-  type: 'wedding' | 'quinceañera' | 'birthday' | 'corporate' | 'other';
+  type: EventType;
   title: string;
   date: string;        // ISO date: "2026-03-15"
   time: string;        // "17:00"
@@ -53,6 +80,7 @@ export interface EventCustom {
     groom: Parents;
     bride: Parents;
   };
+  padrinos?: Padrino[];
   entryScreen?: {
     initials: string[];   // ["A", "B"]
     subtitle: string;     // "Nuestra Boda"
@@ -84,6 +112,7 @@ export interface EventCustom {
 export interface EventConfig {
   core: EventCore;
   custom: EventCustom;
+  modules?: EventModules;
 }
 
 // ─── Supabase row ───────────────────────────────────────────
@@ -94,6 +123,7 @@ export interface EventRow {
   type: string;
   core: EventCore;
   custom: EventCustom;
+  modules?: EventModules;
   is_active: boolean;
   views_count: number;
   last_viewed: string | null;

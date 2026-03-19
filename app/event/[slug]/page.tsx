@@ -135,6 +135,23 @@ export default async function EventPage({ params }: PageProps) {
         </section>
       )}
 
+      {/* ========== PADRINOS ========== */}
+      {custom.padrinos && custom.padrinos.length > 0 && (
+        <section id="padrinos" className="padrinos-section">
+          <div className="section-container">
+            <h2 className="section-title animate-on-scroll">Padrinos</h2>
+            <div className="padrinos-grid">
+              {custom.padrinos.map((padrino, i) => (
+                <div key={i} className={`padrino-card animate-on-scroll ${i > 0 ? `delay-${(i % 5) + 1}` : ''}`}>
+                  <span className="padrino-role">{padrino.role}</span>
+                  <p className="padrino-name">{padrino.name}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* ========== COUPLE IMAGE 3 ========== */}
       {custom.coupleImages?.[2] && (
         <section className="couple-image-section">

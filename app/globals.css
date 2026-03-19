@@ -1010,6 +1010,65 @@ button {
     color: var(--pink-dark);
 }
 
+/* ========== PADRINOS SECTION ========== */
+.padrinos-section {
+    background: var(--white);
+}
+
+.padrinos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.padrino-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 28px 20px;
+    text-align: center;
+    box-shadow: var(--shadow-soft);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.padrino-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-medium);
+}
+
+.padrino-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--gold-gradient);
+}
+
+.padrino-role {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    background: rgba(212, 175, 55, 0.1);
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+}
+
+.padrino-name {
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    color: var(--text-dark);
+    line-height: 1.4;
+}
+
 /* ========== EVENT SECTION ========== */
 .event-section {
     background: var(--white);

@@ -1,5 +1,5 @@
 import pool from './db';
-import { EventConfig, EventRow } from './types';
+import { EventConfig, EventRow, DEFAULT_MODULES, EventType } from './types';
 import { DEMO_EVENT } from './demo-event';
 
 // ─── Fetch Event by Slug (Server-Side → PostgreSQL) ─────────
@@ -27,9 +27,12 @@ export async function getEventBySlug(slug: string): Promise<EventConfig | null> 
       [row.id]
     ).catch(() => {});
 
+    const eventType = (row.core.type || 'other') as EventType;
+
     return {
       core: row.core,
       custom: row.custom || {},
+      modules: row.modules || DEFAULT_MODULES[eventType],
     };
   } catch {
     // If events table doesn't exist yet, fallback to demo

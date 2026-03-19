@@ -72,5 +72,20 @@ export const DEMO_EVENT: EventConfig = {
       names: 'Abidán & Betsaida',
       message: '¡Gracias por ser parte de este amor que comienza y no conoce final!',
     },
+    padrinos: [
+      { name: 'Juan y María López', role: 'Anillos', confirmed: true },
+      { name: 'Pedro y Ana García', role: 'Lazo', confirmed: true },
+      { name: 'Roberto y Lucía Torres', role: 'Arras', confirmed: true },
+      { name: 'Miguel y Carmen Reyes', role: 'Velación', confirmed: false },
+      { name: 'Francisco y Rosa Díaz', role: 'Ramo', confirmed: true },
+      { name: 'David y Elena Ruiz', role: 'Brindis', confirmed: true },
+    ],
+  },
+  modules: {
+    padrinos: true,
+    checklist: true,
+    seating: true,
+    checkin: true,
+    proveedores: true,
   },
 };

@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
     contactPhone: '',
   };
 
-  const custom: EventCustom = type === 'wedding' ? getWeddingTemplate() : {};
+  const custom: EventCustom = getTemplateByType(type as EventCore['type']);
 
   const result = await pool.query(
     `INSERT INTO events (slug, type, core, custom, user_id, is_active)
@@ -82,6 +82,16 @@ function getFutureDate(days: number): string {
   const d = new Date();
   d.setDate(d.getDate() + days);
   return d.toISOString().split('T')[0];
+}
+
+function getTemplateByType(type: EventCore['type']): EventCustom {
+  switch (type) {
+    case 'wedding': return getWeddingTemplate();
+    case 'quinceañera': return getQuinceTemplate();
+    case 'birthday': return getBirthdayTemplate();
+    case 'corporate': return getCorporateTemplate();
+    default: return getDefaultTemplate();
+  }
 }
 
 function getWeddingTemplate(): EventCustom {
@@ -117,3 +127,110 @@ function getWeddingTemplate(): EventCustom {
     },
   };
 }
+
+function getQuinceTemplate(): EventCustom {
+  return {
+    entryScreen: { initials: ['XV'], subtitle: 'Mis Quince Años' },
+    inviteText: 'Con la bendición de Dios y de mis padres, te invito a celebrar conmigo este día tan especial.',
+    timeline: [
+      { time: '4:00 p.m.', title: 'Misa de Acción de Gracias' },
+      { time: '5:30 p.m.', title: 'Recepción' },
+      { time: '6:00 p.m.', title: 'Vals' },
+      { time: '6:30 p.m.', title: 'Brindis' },
+      { time: '7:00 p.m.', title: 'Cena' },
+      { time: '8:00 p.m.', title: '¡Fiesta!' },
+    ],
+    gallery: [],
+    coupleImages: [],
+    music: '',
+    whatsapp: [],
+    rsvp: {
+      note: 'Favor de confirmar tu asistencia',
+      deadline: getFutureDate(45),
+    },
+    theme: { heroPhrase: 'Mis XV Años' },
+    footer: {
+      names: 'Quinceañera',
+      message: '¡Gracias por acompañarme en este día tan especial!',
+    },
+  };
+}
+
+function getBirthdayTemplate(): EventCustom {
+  return {
+    entryScreen: { initials: ['🎂'], subtitle: '¡Estás Invitado!' },
+    inviteText: 'Te invitamos a celebrar con nosotros este día tan especial. ¡Tu presencia es el mejor regalo!',
+    timeline: [
+      { time: '3:00 p.m.', title: 'Llegada de invitados' },
+      { time: '4:00 p.m.', title: 'Juegos y actividades' },
+      { time: '5:00 p.m.', title: 'Pastel y piñata' },
+      { time: '6:00 p.m.', title: '¡Fiesta!' },
+    ],
+    gallery: [],
+    coupleImages: [],
+    music: '',
+    whatsapp: [],
+    rsvp: {
+      note: 'Favor de confirmar tu asistencia',
+      deadline: getFutureDate(30),
+    },
+    theme: { heroPhrase: '¡Celebremos!' },
+    footer: {
+      names: 'Festejado',
+      message: '¡Gracias por celebrar con nosotros!',
+    },
+  };
+}
+
+function getCorporateTemplate(): EventCustom {
+  return {
+    entryScreen: { initials: ['EC'], subtitle: 'Evento Corporativo' },
+    inviteText: 'Nos complace extenderle la invitación a este importante evento. Su presencia es de gran valor para nosotros.',
+    timeline: [
+      { time: '9:00 a.m.', title: 'Registro' },
+      { time: '9:30 a.m.', title: 'Bienvenida' },
+      { time: '10:00 a.m.', title: 'Conferencias' },
+      { time: '1:00 p.m.', title: 'Comida' },
+      { time: '3:00 p.m.', title: 'Networking' },
+    ],
+    gallery: [],
+    coupleImages: [],
+    music: '',
+    whatsapp: [],
+    rsvp: {
+      note: 'Favor de confirmar su asistencia',
+      deadline: getFutureDate(30),
+    },
+    theme: { heroPhrase: 'Bienvenido' },
+    footer: {
+      names: 'Organizador',
+      message: 'Agradecemos su presencia.',
+    },
+  };
+}
+
+function getDefaultTemplate(): EventCustom {
+  return {
+    entryScreen: { initials: ['🎉'], subtitle: '¡Estás Invitado!' },
+    inviteText: 'Te invitamos a celebrar con nosotros.',
+    timeline: [
+      { time: '5:00 p.m.', title: 'Inicio' },
+      { time: '6:00 p.m.', title: 'Evento principal' },
+      { time: '8:00 p.m.', title: 'Cierre' },
+    ],
+    gallery: [],
+    coupleImages: [],
+    music: '',
+    whatsapp: [],
+    rsvp: {
+      note: 'Favor de confirmar tu asistencia',
+      deadline: getFutureDate(30),
+    },
+    theme: { heroPhrase: '¡Celebremos!' },
+    footer: {
+      names: 'Evento',
+      message: '¡Gracias por acompañarnos!',
+    },
+  };
+}
+

@@ -588,7 +588,370 @@
   animation: spin 0.7s linear infinite;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+/* ─── Onboarding Transition ───────────────────────────────── */
+.onboard-transition {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 0;
+  animation: fadeInUp 0.5s ease;
+}
+
+.onboard-check {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #22c55e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.onboard-check svg {
+  width: 28px;
+  height: 28px;
+}
+
+.onboard-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--dash-text);
+  margin: 0;
+}
+
+.onboard-sub {
+  font-size: 14px;
+  color: var(--dash-text-muted);
+  margin: 0;
+}
+
+.onboard-progress {
+  width: 100%;
+  max-width: 200px;
+  height: 3px;
+  background: var(--dash-border);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.onboard-progress-bar {
+  height: 100%;
+  background: var(--dash-accent, #22c55e);
+  border-radius: 3px;
+  animation: progressFill 2s ease forwards;
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes progressFill {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+/* ─── Creation Wizard ─────────────────────────────────────── */
+.wizard-container {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+.wizard-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 40px;
+}
+
+.wizard-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--dash-text-muted);
+  font-weight: 500;
+}
+
+.wizard-step.active {
+  color: var(--dash-text);
+}
+
+.wizard-step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--dash-border);
+  color: var(--dash-text-muted);
+}
+
+.wizard-step.active .wizard-step-num {
+  background: var(--dash-text);
+  color: #fff;
+}
+
+.wizard-step.done .wizard-step-num {
+  background: #22c55e;
+  color: #fff;
+}
+
+.wizard-sep {
+  width: 40px;
+  height: 1px;
+  background: var(--dash-border);
+  margin: 0 12px;
+}
+
+.wizard-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--dash-text);
+  text-align: center;
+  margin: 0 0 8px;
+}
+
+.wizard-subtitle {
+  font-size: 14px;
+  color: var(--dash-text-muted);
+  text-align: center;
+  margin: 0 0 32px;
+}
+
+.wizard-types {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px;
+  margin-bottom: 32px;
+}
+
+.wizard-type-card {
+  background: var(--dash-surface);
+  border: 2px solid var(--dash-border);
+  border-radius: var(--dash-radius);
+  padding: 24px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.wizard-type-card:hover {
+  border-color: var(--dash-text-muted);
+}
+
+.wizard-type-card.selected {
+  border-color: var(--dash-text);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.wizard-type-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.wizard-type-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--dash-text);
+}
+
+.wizard-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 440px;
+  margin: 0 auto 32px;
+}
+
+.wizard-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.wizard-actions .btn-primary,
+.wizard-actions .btn-secondary {
+  min-width: 140px;
+}
+
+/* ─── Upgrade Page ────────────────────────────────────────── */
+.upgrade-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.upgrade-card {
+  background: var(--dash-surface);
+  border: 1px solid var(--dash-border);
+  border-radius: var(--dash-radius);
+  padding: 28px 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.upgrade-card.highlight {
+  border-color: var(--dash-text);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+
+.upgrade-card.current {
+  border-color: #22c55e;
+}
+
+.upgrade-badge {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--dash-text);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.upgrade-badge.current-badge {
+  background: #22c55e;
+}
+
+.upgrade-card-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--dash-text);
+  margin: 8px 0 12px;
+}
+
+.upgrade-card-price {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--dash-text);
+  margin-bottom: 4px;
+}
+
+.upgrade-card-period {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--dash-text-muted);
+  margin-left: 4px;
+}
+
+.upgrade-card-features {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.upgrade-card-features li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--dash-text);
+}
+
+.upgrade-card-btn {
+  width: 100%;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  border: 1px solid var(--dash-border);
+  border-radius: 6px;
+  background: var(--dash-surface);
+  color: var(--dash-text);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.upgrade-card-btn:hover:not(:disabled) {
+  background: var(--dash-text);
+  color: #fff;
+}
+
+.upgrade-card-btn.highlight {
+  background: var(--dash-text);
+  color: #fff;
+  border-color: var(--dash-text);
+}
+
+.upgrade-card-btn.highlight:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.upgrade-card-btn.current {
+  background: #f0fdf4;
+  color: #22c55e;
+  border-color: #22c55e;
+  cursor: default;
+}
+
+.upgrade-card-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.upgrade-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: var(--dash-radius);
+  margin-bottom: 20px;
+  font-size: 13px;
+}
+
+.upgrade-status.success {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+}
+
+.upgrade-status.error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+.upgrade-status.pending {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+}
+
+.upgrade-status-icon {
+  font-size: 18px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.upgrade-status p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  opacity: 0.8;
+}
 
 /* ─── Responsive ───────────────────────────────────────────── */
 @media (max-width: 768px) {
@@ -597,4 +960,8 @@
   .events-grid { grid-template-columns: 1fr; }
   .form-grid { grid-template-columns: 1fr; }
   .dash-header { flex-direction: column; gap: 14px; align-items: flex-start; }
+  .wizard-types { grid-template-columns: repeat(2, 1fr); }
+  .wizard-step span:not(.wizard-step-num) { display: none; }
+  .wizard-sep { width: 24px; }
+  .upgrade-grid { grid-template-columns: 1fr; }
 }
